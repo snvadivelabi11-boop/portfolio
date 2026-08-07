@@ -1,0 +1,12 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      // Public assets (images, certificates, resumes) can be read by anyone
+      allow read: if true;
+      
+      // Uploads, modifications, and deletions restricted strictly to authenticated Firebase Admin users
+      allow write: if request.auth != null;
+    }
+  }
+}
