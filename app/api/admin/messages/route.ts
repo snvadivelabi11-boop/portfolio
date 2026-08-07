@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getContactMessages, deleteContactMessage } from '@/lib/store';
+import { getContactMessages, deleteContactMessage, updateContactMessageStatus } from '@/lib/store';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -10,6 +10,22 @@ export async function GET() {
     return NextResponse.json({ success: true, messages });
   } catch {
     return NextResponse.json({ success: false, messages: [] }, { status: 500 });
+  }
+}
+
+export async function PATCH(request: Request) {
+  try {
+    const body = await request.json();
+    const { id, status } = body;
+
+    if (!id || !status) {
+      return NextResponse.json({ success: false, message: 'Missing message ID or status' }, { status: 400 });
+    }
+
+    const updated = await updateContactMessageStatus(id, status);
+    return NextResponse.json({ success: updated });
+  } catch {
+    return NextResponse.json({ success: false, message: 'Failed to update message status' }, { status: 500 });
   }
 }
 

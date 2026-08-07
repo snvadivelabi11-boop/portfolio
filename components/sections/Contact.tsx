@@ -17,6 +17,7 @@ export default function Contact() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '',
     subject: '',
     message: '',
   });
@@ -43,7 +44,7 @@ export default function Contact() {
       const data = await res.json();
       if (data.success) {
         setStatus('success');
-        setFormData({ name: '', email: '', subject: '', message: '' });
+        setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
         setTimeout(() => setStatus('idle'), 4000);
       } else {
         setStatus('error');
@@ -174,24 +175,39 @@ export default function Contact() {
                     onChange={handleChange}
                     required
                     className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-xs placeholder-white/20 focus:outline-none focus:border-violet-500/50 transition-all"
-                    placeholder="SNVADIVEL11@gmail.com"
+                    placeholder="you@example.com"
                   />
                 </div>
               </div>
 
-              <div>
-                <label htmlFor="subject" className="block text-xs text-white/60 mb-2 font-medium">Subject *</label>
-                <input
-                  id="subject"
-                  name="subject"
-                  type="text"
-                  suppressHydrationWarning
-                  value={formData.subject}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-xs placeholder-white/20 focus:outline-none focus:border-violet-500/50 transition-all"
-                  placeholder="Project inquiry / Full stack development"
-                />
+              <div className="grid sm:grid-cols-2 gap-5">
+                <div>
+                  <label htmlFor="phone" className="block text-xs text-white/60 mb-2 font-medium">Phone Number (optional)</label>
+                  <input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    suppressHydrationWarning
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-xs placeholder-white/20 focus:outline-none focus:border-violet-500/50 transition-all"
+                    placeholder="+91 9876543210"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="subject" className="block text-xs text-white/60 mb-2 font-medium">Subject *</label>
+                  <input
+                    id="subject"
+                    name="subject"
+                    type="text"
+                    suppressHydrationWarning
+                    value={formData.subject}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-xs placeholder-white/20 focus:outline-none focus:border-violet-500/50 transition-all"
+                    placeholder="Project inquiry / Full stack development"
+                  />
+                </div>
               </div>
 
               <div>

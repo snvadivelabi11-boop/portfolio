@@ -284,6 +284,7 @@ export async function getContactMessages(): Promise<ContactMessage[]> {
 export async function saveContactMessage(msg: {
   name: string;
   email: string;
+  phone?: string;
   subject: string;
   message: string;
 }): Promise<ContactMessage> {
@@ -291,10 +292,12 @@ export async function saveContactMessage(msg: {
     id: `msg-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
     name: sanitizeInput(msg.name),
     email: sanitizeInput(msg.email),
+    phone: msg.phone ? sanitizeInput(msg.phone) : undefined,
     subject: sanitizeInput(msg.subject),
     message: sanitizeInput(msg.message),
     createdAt: new Date().toISOString(),
     read: false,
+    status: 'New',
   };
 
   if (db) {
@@ -306,7 +309,31 @@ export async function saveContactMessage(msg: {
     }
   }
 
+  messagesStore.unshift(newMsg);
   return newMsg;
+}
+
+export async function updateContactMessageStatus(
+  id: string,
+  status: 'New' | 'Read' | 'Replied'
+): Promise<boolean> {
+  const read = status !== 'New';
+
+  if (db) {
+    try {
+      const msgRef = doc(db, 'messages', id);
+      await updateDoc(msgRef, { status, read });
+    } catch (err) {
+      console.error('[updateContactMessageStatus Error]:', err);
+    }
+  }
+
+  const msg = messagesStore.find((m) => m.id === id);
+  if (msg) {
+    msg.status = status;
+    msg.read = read;
+  }
+  return true;
 }
 
 export async function deleteContactMessage(id: string): Promise<boolean> {

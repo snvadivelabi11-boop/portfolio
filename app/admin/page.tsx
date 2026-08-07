@@ -5,7 +5,7 @@ import {
   Activity, CheckCircle2, XCircle, Trash2, LogOut, ArrowLeft, RefreshCw, BarChart2,
   MessageSquare, Star, Calendar, Folder, BookOpen, Settings, Save, Plus,
   Award as AwardIcon, Briefcase, GraduationCap, Code2, Cpu, User, Phone,
-  Share2, Image as ImageIcon, Copy, ShieldCheck, Search, Eye
+  Share2, Image as ImageIcon, Copy, ShieldCheck, Search, Eye, Mail
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -79,6 +79,8 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState<AnalyticsStats | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [messages, setMessages] = useState<ContactMessage[]>([]);
+  const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(null);
+  const [copiedMessageEmailId, setCopiedMessageEmailId] = useState<string | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [statusMsg, setStatusMsg] = useState('');
@@ -177,6 +179,33 @@ export default function AdminDashboard() {
   const notifySuccess = (msg: string) => {
     setStatusMsg(`✓ ${msg}`);
     setTimeout(() => setStatusMsg(''), 4000);
+  };
+
+  const handleUpdateMessageStatus = async (id: string, status: 'New' | 'Read' | 'Replied') => {
+    try {
+      await fetch('/api/admin/messages', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status }),
+      });
+      setMessages((prev) =>
+        prev.map((m) => (m.id === id ? { ...m, status, read: status !== 'New' } : m))
+      );
+      if (selectedMessage && selectedMessage.id === id) {
+        setSelectedMessage((prev) => (prev ? { ...prev, status, read: status !== 'New' } : null));
+      }
+      notifySuccess(`Message marked as ${status}`);
+    } catch {
+      console.error('Failed to update message status');
+    }
+  };
+
+  const handleCopyMessageEmail = (email: string, id: string) => {
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(email);
+      setCopiedMessageEmailId(id);
+      setTimeout(() => setCopiedMessageEmailId(null), 2000);
+    }
   };
 
   // ──── Save Handlers ────
@@ -486,9 +515,11 @@ export default function AdminDashboard() {
   }
 
   const unreadBookingsCount = allBookings.filter((b: Booking) => b.status === 'New' || b.status === 'Pending' || b.unread).length;
+  const unreadMessagesCount = messages.filter((m: ContactMessage) => m.status === 'New' || (!m.status && !m.read)).length;
 
   const menuItems = [
     { id: 'overview', label: 'Dashboard', icon: BarChart2 },
+    { id: 'messages', label: `Messages (${messages.length})`, icon: Mail, badge: unreadMessagesCount },
     { id: 'bookings', label: `Booking Requests (${allBookings.length})`, icon: Calendar, badge: unreadBookingsCount },
     { id: 'profile', label: 'Profile', icon: User },
     { id: 'about', label: 'About', icon: User },
@@ -1991,31 +2022,201 @@ export default function AdminDashboard() {
 
           {/* MESSAGES SUB-TAB */}
           {activeTab === 'messages' && (
-            <div className="space-y-4 text-xs">
-              <h2 className="text-base font-bold text-white flex items-center gap-2">
-                <MessageSquare size={18} className="text-violet-400" /> Contact Messages Inbox ({messages.length})
-              </h2>
+            <div className="space-y-6 text-xs">
+              <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+                <div>
+                  <h2 className="text-base font-bold text-white flex items-center gap-2">
+                    <Mail size={18} className="text-violet-400" /> Contact Messages Management ({messages.length})
+                  </h2>
+                  <p className="text-xs text-white/50">View, manage, reply to, and organize visitor contact form submissions.</p>
+                </div>
+              </div>
+
+              {/* Stat Cards */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="p-4 rounded-2xl border border-white/[0.08] bg-white/[0.02]">
+                  <div className="text-white/40 text-[11px] font-mono">Total Messages</div>
+                  <div className="text-xl font-bold text-white mt-1">{messages.length}</div>
+                </div>
+                <div className="p-4 rounded-2xl border border-fuchsia-500/20 bg-fuchsia-500/10">
+                  <div className="text-fuchsia-300 text-[11px] font-mono">New Messages</div>
+                  <div className="text-xl font-bold text-fuchsia-300 mt-1">
+                    {messages.filter((m) => m.status === 'New' || (!m.status && !m.read)).length}
+                  </div>
+                </div>
+                <div className="p-4 rounded-2xl border border-sky-500/20 bg-sky-500/10">
+                  <div className="text-sky-300 text-[11px] font-mono">Read Messages</div>
+                  <div className="text-xl font-bold text-sky-300 mt-1">
+                    {messages.filter((m) => m.status === 'Read' || (m.read && m.status !== 'Replied')).length}
+                  </div>
+                </div>
+                <div className="p-4 rounded-2xl border border-emerald-500/20 bg-emerald-500/10">
+                  <div className="text-emerald-300 text-[11px] font-mono">Replied Messages</div>
+                  <div className="text-xl font-bold text-emerald-300 mt-1">
+                    {messages.filter((m) => m.status === 'Replied').length}
+                  </div>
+                </div>
+              </div>
+
+              {/* Messages Table */}
               {messages.length === 0 ? (
-                <div className="text-center py-12 border border-dashed border-white/10 rounded-2xl text-white/40">
-                  <MessageSquare size={32} className="mx-auto mb-2 text-white/20" />
-                  <h3 className="text-sm font-bold text-white">No messages found</h3>
+                <div className="text-center py-16 border border-dashed border-white/10 rounded-2xl text-white/40">
+                  <Mail size={36} className="mx-auto mb-2 text-white/20" />
+                  <h3 className="text-sm font-bold text-white">No Contact Messages Received</h3>
+                  <p className="text-xs text-white/40 mt-1">Submitted messages from visitors will appear here in real time.</p>
                 </div>
               ) : (
-                messages.map((msg) => (
-                  <div key={msg.id} className="p-6 rounded-2xl border border-white/[0.08] bg-white/[0.02] space-y-3">
-                    <div className="flex justify-between items-start">
+                <div className="rounded-2xl border border-white/[0.08] bg-neutral-900/60 overflow-hidden shadow-xl">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="border-b border-white/[0.08] bg-white/[0.02] text-white/40 text-[10px] uppercase font-mono">
+                          <th className="p-3.5">Name</th>
+                          <th className="p-3.5">Email</th>
+                          <th className="p-3.5">Phone</th>
+                          <th className="p-3.5">Subject</th>
+                          <th className="p-3.5">Preview</th>
+                          <th className="p-3.5">Date</th>
+                          <th className="p-3.5">Status</th>
+                          <th className="p-3.5 text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/[0.04]">
+                        {messages.map((msg) => {
+                          const currentStatus = msg.status || (msg.read ? 'Read' : 'New');
+                          return (
+                            <tr key={msg.id} className="hover:bg-white/[0.02] transition-colors cursor-pointer" onClick={() => setSelectedMessage(msg)}>
+                              <td className="p-3.5 font-bold text-white whitespace-nowrap">{msg.name}</td>
+                              <td className="p-3.5 text-violet-400 font-mono whitespace-nowrap">{msg.email}</td>
+                              <td className="p-3.5 text-white/60 font-mono whitespace-nowrap">{msg.phone || '—'}</td>
+                              <td className="p-3.5 text-white font-medium whitespace-nowrap max-w-[150px] truncate">{msg.subject}</td>
+                              <td className="p-3.5 text-white/50 max-w-[200px] truncate">{msg.message}</td>
+                              <td className="p-3.5 text-white/40 font-mono whitespace-nowrap">
+                                {new Date(msg.createdAt).toLocaleDateString()}
+                              </td>
+                              <td className="p-3.5 whitespace-nowrap">
+                                {currentStatus === 'New' && (
+                                  <span className="px-2.5 py-0.5 rounded-full bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/30 text-[10px] font-bold">
+                                    New
+                                  </span>
+                                )}
+                                {currentStatus === 'Read' && (
+                                  <span className="px-2.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30 text-[10px] font-bold">
+                                    Read
+                                  </span>
+                                )}
+                                {currentStatus === 'Replied' && (
+                                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold">
+                                    Replied
+                                  </span>
+                                )}
+                              </td>
+                              <td className="p-3.5 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                                <div className="flex items-center justify-end gap-1.5">
+                                  <button
+                                    onClick={() => setSelectedMessage(msg)}
+                                    className="px-2.5 py-1 rounded-lg bg-violet-500/10 hover:bg-violet-500/20 text-violet-300 border border-violet-500/20 text-[11px]"
+                                  >
+                                    View
+                                  </button>
+                                  <button
+                                    onClick={() => handleCopyMessageEmail(msg.email, msg.id)}
+                                    className="px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-white/70 border border-white/[0.08] text-[11px]"
+                                  >
+                                    {copiedMessageEmailId === msg.id ? 'Copied!' : 'Copy Email'}
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteMessage(msg.id)}
+                                    className="p-1 rounded-lg hover:bg-red-500/10 text-white/40 hover:text-red-400"
+                                  >
+                                    <Trash2 size={15} />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* Message Detail View Modal */}
+              {selectedMessage && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+                  <div className="w-full max-w-2xl bg-neutral-900 border border-white/[0.1] rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl relative">
+                    <div className="flex justify-between items-start border-b border-white/[0.08] pb-4">
                       <div>
-                        <h3 className="text-sm font-bold text-white">{msg.name}</h3>
-                        <a href={`mailto:${msg.email}`} className="text-violet-400 hover:underline">{msg.email}</a>
+                        <div className="text-[10px] font-mono text-violet-400 uppercase">Contact Message Detail</div>
+                        <h3 className="text-lg font-bold text-white mt-0.5">{selectedMessage.subject}</h3>
                       </div>
-                      <button onClick={() => handleDeleteMessage(msg.id)} className="p-1 text-white/40 hover:text-red-400">
-                        <Trash2 size={16} />
+                      <button
+                        onClick={() => setSelectedMessage(null)}
+                        className="p-1.5 rounded-full hover:bg-white/[0.08] text-white/50 hover:text-white"
+                      >
+                        <XCircle size={20} />
                       </button>
                     </div>
-                    <div className="font-semibold text-violet-300">Subject: {msg.subject}</div>
-                    <p className="text-white/70 bg-white/[0.02] p-4 rounded-xl border border-white/[0.04]">{msg.message}</p>
+
+                    <div className="grid sm:grid-cols-2 gap-4 text-xs bg-white/[0.02] p-4 rounded-2xl border border-white/[0.06]">
+                      <div>
+                        <span className="text-white/40">From:</span> <strong className="text-white">{selectedMessage.name}</strong>
+                      </div>
+                      <div>
+                        <span className="text-white/40">Email:</span> <a href={`mailto:${selectedMessage.email}`} className="text-violet-400 underline font-mono">{selectedMessage.email}</a>
+                      </div>
+                      <div>
+                        <span className="text-white/40">Phone:</span> <strong className="text-white/80 font-mono">{selectedMessage.phone || 'N/A'}</strong>
+                      </div>
+                      <div>
+                        <span className="text-white/40">Date:</span> <strong className="text-white/80 font-mono">{new Date(selectedMessage.createdAt).toLocaleString()}</strong>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-white/50 mb-1.5 text-[11px] font-mono uppercase">Full Message Content</label>
+                      <div className="p-4 rounded-2xl bg-neutral-950 border border-white/[0.08] text-white/90 leading-relaxed whitespace-pre-wrap text-xs">
+                        {selectedMessage.message}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-white/[0.08]">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleUpdateMessageStatus(selectedMessage.id, 'Read')}
+                          className="px-3.5 py-2 rounded-xl bg-sky-500/10 hover:bg-sky-500/20 text-sky-300 border border-sky-500/30 text-xs font-semibold"
+                        >
+                          Mark as Read
+                        </button>
+                        <button
+                          onClick={() => handleUpdateMessageStatus(selectedMessage.id, 'Replied')}
+                          className="px-3.5 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold"
+                        >
+                          Mark as Replied
+                        </button>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleCopyMessageEmail(selectedMessage.email, selectedMessage.id)}
+                          className="px-3.5 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-white/80 border border-white/[0.1] text-xs font-semibold"
+                        >
+                          {copiedMessageEmailId === selectedMessage.id ? 'Copied Email!' : 'Copy Email'}
+                        </button>
+                        <button
+                          onClick={async () => {
+                            await handleDeleteMessage(selectedMessage.id);
+                            setSelectedMessage(null);
+                          }}
+                          className="px-3.5 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-300 border border-red-500/30 text-xs font-semibold flex items-center gap-1.5"
+                        >
+                          <Trash2 size={14} /> Delete
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                ))
+                </div>
               )}
             </div>
           )}

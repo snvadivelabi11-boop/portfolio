@@ -86,10 +86,12 @@ export interface ContactMessage {
   id: string;
   name: string;
   email: string;
+  phone?: string;
   subject: string;
   message: string;
   createdAt: string;
   read: boolean;
+  status?: 'New' | 'Read' | 'Replied';
 }
 
 export interface Booking {
