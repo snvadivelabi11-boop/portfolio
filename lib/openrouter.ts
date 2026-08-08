@@ -88,7 +88,7 @@ async function executeOpenRouterRequest(
   const timeoutId = setTimeout(() => controller.abort(), 18000); // 18s timeout
 
   try {
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.abishektech.online';
 
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',

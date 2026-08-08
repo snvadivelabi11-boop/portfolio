@@ -142,7 +142,7 @@ export default async function Image() {
               letterSpacing: 2,
             }}
           >
-            abishek.dev
+            www.abishektech.online
           </div>
         </div>
       </div>

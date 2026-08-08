@@ -199,7 +199,7 @@ export const projects: Project[] = [
       'A full-stack AI automation platform built with Next.js 15, TypeScript, OpenAI API, and Supabase. Enables users to construct custom multi-step AI prompts, automate document processing, and trigger Webhook flows.',
     image: '/projects/project1.jpg',
     technologies: ['Next.js 15', 'TypeScript', 'OpenAI API', 'Supabase', 'Tailwind CSS'],
-    liveUrl: 'https://abishek.dev',
+    liveUrl: 'https://www.abishektech.online',
     githubUrl: 'https://github.com/snvadivelabi11-boop/ai-workflow-automation-hub',
     category: 'AI',
     caseStudy: {
@@ -216,7 +216,7 @@ export const projects: Project[] = [
       'Real-time traffic and visitor telemetry dashboard featuring interactive charts, device/browser breakdown, live online counter, and audit log tracking.',
     image: '/projects/project2.jpg',
     technologies: ['React', 'Next.js', 'Recharts', 'PostgreSQL', 'Framer Motion'],
-    liveUrl: 'https://abishek.dev',
+    liveUrl: 'https://www.abishektech.online',
     githubUrl: 'https://github.com/snvadivelabi11-boop/enterprise-visitor-telemetry',
     category: 'Web',
     caseStudy: {
@@ -233,7 +233,7 @@ export const projects: Project[] = [
       'Ultra-fast digital commerce storefront with instant search filtering, cart state management, checkout integration, and custom luxury dark styling.',
     image: '/projects/project3.jpg',
     technologies: ['Next.js 15', 'Tailwind CSS', 'Zustand', 'Stripe API', 'TypeScript'],
-    liveUrl: 'https://abishek.dev',
+    liveUrl: 'https://www.abishektech.online',
     githubUrl: 'https://github.com/snvadivelabi11-boop/modern-ecommerce-storefront',
     category: 'Web',
     caseStudy: {
@@ -250,7 +250,7 @@ export const projects: Project[] = [
       'AI-powered document analysis application that ingests PDFs, extracts key takeaways, generates structured JSON summaries, and offers RAG semantic search.',
     image: '/projects/project4.jpg',
     technologies: ['Python', 'FastAPI', 'LangChain', 'Next.js', 'PostgreSQL'],
-    liveUrl: 'https://abishek.dev',
+    liveUrl: 'https://www.abishektech.online',
     githubUrl: 'https://github.com/snvadivelabi11-boop/ai-document-summarizer',
     category: 'AI',
     caseStudy: {

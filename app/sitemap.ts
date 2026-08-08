@@ -1,7 +1,8 @@
 import type { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const siteUrl = 'https://abishek.dev';
+  const rawUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'https://www.abishektech.online';
+  const siteUrl = rawUrl.replace(/\/+$/, '');
   const currentDate = new Date().toISOString();
 
   // Core pages

@@ -38,7 +38,7 @@ export default function PrivacyPolicy() {
           <section className="space-y-3">
             <h2 className="text-base font-bold text-white">1. Introduction</h2>
             <p>
-              Abishek Digital (&ldquo;we&rdquo;, &ldquo;our&rdquo;, or &ldquo;us&rdquo;) respects your privacy and is committed to protecting visitor personal data. This Privacy Policy explains how information is collected, used, and safeguarded when visiting abishek.dev.
+              Abishek Digital (&ldquo;we&rdquo;, &ldquo;our&rdquo;, or &ldquo;us&rdquo;) respects your privacy and is committed to protecting visitor personal data. This Privacy Policy explains how information is collected, used, and safeguarded when visiting www.abishektech.online.
             </p>
           </section>
 

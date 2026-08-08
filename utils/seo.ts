@@ -12,7 +12,7 @@ export const siteConfig = {
     'Abishek is a Full Stack Developer & AI Creator based in Tiruvannamalai. Specializing in Next.js, React, TypeScript, Python, AI Automation, API Development, and UI/UX Design.',
   shortDescription:
     'Full Stack Developer & AI Creator crafting exceptional digital experiences.',
-  url: 'https://abishek.dev',
+  url: process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'https://www.abishektech.online',
   ogImage: '/og-image.png',
   locale: 'en_US',
   language: 'en',
@@ -20,7 +20,7 @@ export const siteConfig = {
     name: 'Abishek',
     email: 'SNVADIVEL11@gmail.com',
     phone: '9786801597',
-    url: 'https://abishek.dev',
+    url: process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'https://www.abishektech.online',
     jobTitle: 'Full Stack Developer & AI Creator',
     description:
       'Full Stack Developer and AI Creator from Tiruvannamalai with expertise in modern web development, Next.js, React, TypeScript, AI Automation, and API development.',
@@ -97,7 +97,9 @@ export function getAllKeywords(): string[] {
 }
 
 export function getCanonicalUrl(path: string = ''): string {
-  return `${siteConfig.url}${path}`;
+  const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || siteConfig.url).replace(/\/+$/, '');
+  const cleanPath = path ? (path.startsWith('/') ? path : `/${path}`) : '';
+  return `${baseUrl}${cleanPath}`;
 }
 
 export async function getDynamicSiteConfig() {
