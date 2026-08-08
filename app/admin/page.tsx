@@ -563,6 +563,7 @@ export default function AdminDashboard() {
     { id: 'overview', label: 'Dashboard', icon: BarChart2 },
     { id: 'messages', label: `Messages (${messages.length})`, icon: Mail, badge: unreadMessagesCount },
     { id: 'bookings', label: `Booking Requests (${allBookings.length})`, icon: Calendar, badge: unreadBookingsCount },
+    { id: 'reviews', label: `Reviews (${reviews.length})`, icon: Star },
     { id: 'profile', label: 'Profile', icon: User },
     { id: 'about', label: 'About', icon: User },
     { id: 'experience', label: `Experience (${experiences.length})`, icon: Briefcase },
@@ -945,6 +946,96 @@ export default function AdminDashboard() {
                   </div>
                 );
               })()}
+            </div>
+          )}
+
+          {/* 1.6 CLIENT REVIEWS MANAGEMENT PANEL */}
+          {activeTab === 'reviews' && (
+            <div className="space-y-6 text-xs">
+              <div className="flex flex-wrap justify-between items-center gap-4">
+                <div>
+                  <h2 className="text-base font-bold text-white flex items-center gap-2">
+                    <Star size={18} className="text-amber-400 fill-amber-400" /> Client Reviews Management ({reviews.length})
+                  </h2>
+                  <p className="text-xs text-white/50">Manage real client reviews stored in Firestore database.</p>
+                </div>
+              </div>
+
+              {reviews.length === 0 ? (
+                <div className="text-center py-12 border border-dashed border-white/10 rounded-2xl space-y-2">
+                  <Star size={32} className="mx-auto text-white/30" />
+                  <p className="text-white/60 font-semibold">No reviews yet.</p>
+                  <p className="text-white/40 text-[11px]">Submitted client reviews will appear here automatically.</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {reviews.map((rev) => (
+                    <div key={rev.id} className="p-5 rounded-2xl border border-white/[0.08] bg-white/[0.02] space-y-3">
+                      <div className="flex flex-wrap justify-between items-start gap-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white font-bold text-sm shadow-md">
+                            {rev.name?.[0] || 'V'}
+                          </div>
+                          <div>
+                            <div className="font-bold text-white text-sm">{rev.name}</div>
+                            <div className="text-[11px] text-violet-300 font-medium">
+                              {rev.role} {rev.company ? `at ${rev.company}` : ''}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider ${
+                              rev.status === 'approved'
+                                ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20'
+                                : rev.status === 'rejected'
+                                ? 'bg-red-500/10 text-red-300 border-red-500/20'
+                                : 'bg-amber-500/10 text-amber-300 border-amber-500/20'
+                            }`}
+                          >
+                            {rev.status || 'approved'}
+                          </span>
+
+                          <button
+                            onClick={() => handleUpdateReviewStatus(rev.id, 'approved')}
+                            className="px-2.5 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/20 text-[11px] font-semibold"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => handleUpdateReviewStatus(rev.id, 'rejected')}
+                            className="px-2.5 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/20 text-[11px] font-semibold"
+                          >
+                            Reject
+                          </button>
+                          <button
+                            onClick={() => handleDeleteReview(rev.id)}
+                            className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-300 border border-red-500/20"
+                            title="Delete Review from Firestore"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1">
+                        {Array.from({ length: rev.rating || 5 }).map((_, i) => (
+                          <Star key={i} size={14} className="fill-amber-400 text-amber-400" />
+                        ))}
+                      </div>
+
+                      <p className="text-xs text-white/80 italic leading-relaxed">&ldquo;{rev.content}&rdquo;</p>
+
+                      {rev.createdAt && (
+                        <div className="text-[10px] text-white/40 font-mono">
+                          Submitted: {new Date(rev.createdAt).toLocaleString()} | ID: {rev.id}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
