@@ -24,8 +24,8 @@ export default function Projects() {
       : displayProjects.filter((p) => p.category === activeCategory);
 
   return (
-    <section id="projects" className="relative py-32">
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
+    <section id="projects" className="relative py-20 sm:py-28 lg:py-32">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
         <SectionHeading title="Featured Projects" subtitle="Real-World Software Craft" />
 
         {/* Category Filters */}
@@ -34,14 +34,14 @@ export default function Projects() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="flex justify-center gap-2 mb-12"
+          className="flex flex-wrap justify-center gap-2 mb-8 sm:mb-12"
         >
           {categories.map((cat) => (
             <button
               key={cat}
               suppressHydrationWarning
               onClick={() => setActiveCategory(cat)}
-              className={`px-6 py-2.5 rounded-full text-xs font-semibold tracking-wider uppercase transition-all duration-300 ${
+              className={`px-5 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs font-semibold tracking-wider uppercase transition-all duration-300 ${
                 activeCategory === cat
                   ? 'bg-violet-500/20 text-violet-300 border border-violet-500/40 shadow-lg shadow-violet-500/10'
                   : 'text-white/40 hover:text-white/80 border border-white/[0.06] hover:border-white/[0.15]'
@@ -58,7 +58,7 @@ export default function Projects() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid md:grid-cols-2 gap-8"
+          className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8"
         >
           <AnimatePresence mode="popLayout">
             {filteredProjects.length === 0 ? (

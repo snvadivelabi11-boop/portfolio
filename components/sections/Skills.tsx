@@ -42,10 +42,10 @@ export default function Skills() {
     : [];
 
   return (
-    <section id="skills" className="relative py-32">
+    <section id="skills" className="relative py-20 sm:py-28 lg:py-32">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-violet-600/10 rounded-full blur-[140px] pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
         <SectionHeading title="Skills &amp; Expertise" subtitle="Comprehensive Technical Capabilities" />
 
         <motion.div
@@ -53,7 +53,7 @@ export default function Skills() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-50px' }}
-          className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
         >
           {categories.length === 0 ? (
             <div className="col-span-4 text-center py-12 border border-dashed border-white/10 rounded-2xl text-white/40 text-xs italic">

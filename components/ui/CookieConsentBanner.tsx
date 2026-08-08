@@ -29,7 +29,7 @@ export default function CookieConsentBanner() {
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
-          className="fixed bottom-6 left-6 z-50 max-w-md p-4 rounded-2xl bg-neutral-900/95 border border-white/10 shadow-2xl backdrop-blur-xl flex flex-col sm:flex-row items-start sm:items-center gap-3 text-xs text-white/80"
+          className="fixed bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] left-4 right-4 sm:left-6 sm:right-auto sm:max-w-md z-[9990] p-4 rounded-2xl bg-neutral-900/95 border border-white/10 shadow-2xl backdrop-blur-xl flex flex-col sm:flex-row items-start sm:items-center gap-3 text-xs text-white/80"
         >
           <div className="p-2 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 flex-shrink-0">
             <ShieldCheck size={20} />

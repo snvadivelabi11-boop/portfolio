@@ -68,11 +68,11 @@ export default function Contact() {
   ];
 
   return (
-    <section id="contact" className="relative py-32">
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
+    <section id="contact" className="relative py-20 sm:py-28 lg:py-32">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
         <SectionHeading title="Get In Touch" subtitle="Let's Build Together" />
 
-        <div className="grid lg:grid-cols-5 gap-10">
+        <div className="grid lg:grid-cols-5 gap-8 lg:gap-10">
           {/* Contact Details Column */}
           <motion.div
             variants={staggerContainer}

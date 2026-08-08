@@ -58,11 +58,11 @@ export default function About() {
     },
   ];
   return (
-    <section id="about" className="relative py-32 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6">
+    <section id="about" className="relative py-20 sm:py-28 lg:py-32 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <SectionHeading title="About Me" subtitle="Engineering & Vision" />
 
-        <div className="grid lg:grid-cols-12 gap-12 items-start">
+        <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-start">
           {/* Avatar / Profile Graphic Card */}
           <motion.div
             variants={fadeInUp}
@@ -71,7 +71,7 @@ export default function About() {
             viewport={{ once: true }}
             className="lg:col-span-5 relative"
           >
-            <div className="relative w-full aspect-square max-w-md mx-auto rounded-3xl overflow-hidden border border-white/[0.08] bg-neutral-900/60 backdrop-blur-2xl p-8 flex flex-col justify-between group">
+            <div className="relative w-full max-w-md mx-auto rounded-3xl overflow-hidden border border-white/[0.08] bg-neutral-900/60 backdrop-blur-2xl p-6 sm:p-8 flex flex-col justify-between group">
               <div className="absolute inset-0 bg-gradient-to-br from-violet-600/20 via-transparent to-fuchsia-600/20 opacity-50 group-hover:opacity-80 transition-opacity duration-500" />
 
               <div className="relative z-10 flex justify-between items-start">

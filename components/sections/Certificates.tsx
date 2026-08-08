@@ -39,8 +39,8 @@ export default function Certificates() {
   const handleResetZoom = () => setZoomScale(1);
 
   return (
-    <section id="certificates" className="relative py-32">
-      <div className="max-w-7xl mx-auto px-6">
+    <section id="certificates" className="relative py-20 sm:py-28 lg:py-32">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <SectionHeading
           title="Verified Certifications &amp; Credentials"
           subtitle="Professional Industry Achievements"
@@ -60,7 +60,7 @@ export default function Certificates() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           >
             {visibleCertificates.map((cert) => {
               const certTitle = cert.name || cert.title || 'Professional Certification';

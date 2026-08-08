@@ -72,7 +72,7 @@ export default function BookMeetingModal({ isOpen, onClose }: BookMeetingModalPr
             initial={{ scale: 0.9, y: 20 }}
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.9, y: 20 }}
-            className="relative w-full max-w-lg bg-neutral-900 border border-white/10 rounded-3xl p-8 shadow-2xl my-8"
+            className="relative w-full max-w-lg bg-neutral-900 border border-white/10 rounded-3xl p-5 sm:p-8 shadow-2xl my-8 max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -108,7 +108,7 @@ export default function BookMeetingModal({ isOpen, onClose }: BookMeetingModalPr
                   </div>
                 )}
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-white/70 mb-1.5 font-medium flex items-center gap-1">
                       <User size={12} /> Name *
@@ -139,7 +139,7 @@ export default function BookMeetingModal({ isOpen, onClose }: BookMeetingModalPr
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-white/70 mb-1.5 font-medium flex items-center gap-1">
                       <Phone size={12} /> Phone *
@@ -169,7 +169,7 @@ export default function BookMeetingModal({ isOpen, onClose }: BookMeetingModalPr
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-white/70 mb-1.5 font-medium flex items-center gap-1">
                       <Calendar size={12} /> Preferred Date *

@@ -98,7 +98,7 @@ ${awardLines || 'No awards added yet.'}
             initial={{ scale: 0.9, y: 20 }}
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.9, y: 20 }}
-            className="relative w-full max-w-2xl bg-neutral-900 border border-white/10 rounded-3xl p-8 max-h-[85vh] overflow-y-auto shadow-2xl"
+            className="relative w-full max-w-2xl bg-neutral-900 border border-white/10 rounded-3xl p-5 sm:p-8 max-h-[85vh] overflow-y-auto shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <button

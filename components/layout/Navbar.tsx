@@ -117,7 +117,7 @@ export default function Navbar() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
-              className="lg:hidden fixed inset-0 top-20 bg-neutral-950/95 backdrop-blur-2xl z-40 p-6 flex flex-col justify-between"
+              className="lg:hidden fixed inset-0 top-20 bg-neutral-950/95 backdrop-blur-2xl z-40 p-6 flex flex-col justify-between overflow-y-auto max-h-[calc(100vh-5rem)]"
             >
               <div className="flex flex-col gap-4 text-center">
                 {navLinks.map(({ label, href }) => (

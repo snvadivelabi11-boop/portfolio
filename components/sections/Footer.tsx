@@ -27,9 +27,9 @@ export default function Footer() {
 
   return (
     <footer className="relative border-t border-white/[0.08] bg-neutral-950/80 backdrop-blur-2xl">
-      <div className="max-w-7xl mx-auto px-6 py-16">
-        <div className="grid md:grid-cols-4 gap-10 mb-12">
-          <div className="md:col-span-2">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-10 mb-10 sm:mb-12">
+          <div className="sm:col-span-2">
             <Link href="/" className="text-2xl font-extrabold tracking-tight">
               <span className="bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
                 {activeName} Digital

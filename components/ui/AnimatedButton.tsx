@@ -19,7 +19,7 @@ export default function AnimatedButton({
   className = '',
 }: AnimatedButtonProps) {
   const baseStyles =
-    'relative inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-medium text-sm tracking-wide overflow-hidden transition-all duration-300';
+    'relative inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3 sm:py-3.5 rounded-full font-semibold text-xs sm:text-sm tracking-wide overflow-hidden transition-all duration-300 w-full sm:w-auto text-center';
 
   const variants = {
     primary:
@@ -31,15 +31,16 @@ export default function AnimatedButton({
   const combinedStyles = `${baseStyles} ${variants[variant]} ${className}`;
 
   if (href) {
+    const isExternal = href.startsWith('http');
     return (
       <motion.a
         href={href}
-        target="_blank"
-        rel="noopener noreferrer"
+        target={isExternal ? '_blank' : '_self'}
+        rel={isExternal ? 'noopener noreferrer' : undefined}
         whileTap={{ scale: 0.97 }}
         className={combinedStyles}
       >
-        <span className="relative z-10 flex items-center gap-2">{children}</span>
+        <span className="relative z-10 flex items-center justify-center gap-2">{children}</span>
       </motion.a>
     );
   }

@@ -16,14 +16,14 @@ export default function Experience() {
   const awardsList = liveCertificates;
 
   return (
-    <section id="experience" className="relative py-32">
-      <div className="max-w-7xl mx-auto px-6">
+    <section id="experience" className="relative py-20 sm:py-28 lg:py-32">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <SectionHeading title="Experience, Education &amp; Award" subtitle="Authentic Track Record" />
 
-        <div className="grid lg:grid-cols-12 gap-12">
+        <div className="grid lg:grid-cols-12 gap-8 lg:gap-12">
           {/* Work Experience */}
           <div className="lg:col-span-6">
-            <h3 className="text-xl font-bold text-white mb-8 flex items-center gap-3">
+            <h3 className="text-xl font-bold text-white mb-6 sm:mb-8 flex items-center gap-3">
               <div className="p-2 rounded-xl bg-violet-500/10 text-violet-400 border border-violet-500/20">
                 <Briefcase size={20} />
               </div>
@@ -35,7 +35,7 @@ export default function Experience() {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className="relative border-l-2 border-violet-500/30 ml-4 pl-8 space-y-8"
+              className="relative border-l-2 border-violet-500/30 ml-2 sm:ml-4 pl-6 sm:pl-8 space-y-6 sm:space-y-8"
             >
               {experiencesList.length === 0 ? (
                 <div className="text-xs text-white/40 italic py-6 border border-dashed border-white/10 rounded-2xl text-center">
@@ -49,7 +49,7 @@ export default function Experience() {
 
                   return (
                     <motion.div key={exp.id || idx} variants={fadeInUp} className="relative">
-                      <div className="absolute -left-[41px] top-1.5 w-4 h-4 rounded-full bg-violet-500 border-4 border-neutral-950 shadow-lg shadow-violet-500/50" />
+                      <div className="absolute -left-[33px] sm:-left-[41px] top-1.5 w-4 h-4 rounded-full bg-violet-500 border-4 border-neutral-950 shadow-lg shadow-violet-500/50" />
 
                       <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] backdrop-blur-xl p-6 hover:border-violet-500/30 transition-all">
                         <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
@@ -103,7 +103,7 @@ export default function Experience() {
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true }}
-                className="relative border-l-2 border-fuchsia-500/30 ml-4 pl-8 space-y-8"
+                className="relative border-l-2 border-fuchsia-500/30 ml-2 sm:ml-4 pl-6 sm:pl-8 space-y-6 sm:space-y-8"
               >
                 {educationList.length === 0 ? (
                   <div className="text-xs text-white/40 italic py-6 border border-dashed border-white/10 rounded-2xl text-center">
@@ -117,7 +117,7 @@ export default function Experience() {
 
                     return (
                       <motion.div key={edu.id || idx} variants={fadeInUp} className="relative">
-                        <div className="absolute -left-[41px] top-1.5 w-4 h-4 rounded-full bg-fuchsia-500 border-4 border-neutral-950 shadow-lg shadow-fuchsia-500/50" />
+                        <div className="absolute -left-[33px] sm:-left-[41px] top-1.5 w-4 h-4 rounded-full bg-fuchsia-500 border-4 border-neutral-950 shadow-lg shadow-fuchsia-500/50" />
 
                         <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] backdrop-blur-xl p-6 hover:border-fuchsia-500/30 transition-all">
                           <div className="flex flex-wrap items-center justify-between gap-2 mb-2">

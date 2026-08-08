@@ -120,7 +120,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-5xl sm:text-7xl md:text-8xl font-extrabold tracking-tight leading-[0.95] mb-6"
+          className="text-4xl sm:text-7xl md:text-8xl font-extrabold tracking-tight leading-[0.98] mb-6 break-words"
         >
           <span className="block text-white">Hi, I&apos;m</span>
           <span className="block mt-2 bg-gradient-to-r from-violet-400 via-fuchsia-400 to-indigo-400 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
@@ -133,9 +133,9 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="h-12 flex items-center justify-center mb-8"
+          className="min-h-12 flex items-center justify-center mb-6 sm:mb-8"
         >
-          <span className="text-xl sm:text-2xl md:text-3xl font-semibold text-white/90">
+          <span className="text-lg sm:text-2xl md:text-3xl font-semibold text-white/90 leading-snug">
             {displayedText}
             <span className="animate-pulse text-violet-400">|</span>
           </span>
@@ -146,7 +146,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
-          className="text-base sm:text-lg md:text-xl text-white/60 font-normal max-w-2xl mx-auto mb-10 leading-relaxed"
+          className="text-sm sm:text-lg md:text-xl text-white/60 font-normal max-w-2xl mx-auto mb-8 sm:mb-10 leading-relaxed"
         >
           {activeDescription}
         </motion.p>
@@ -156,7 +156,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8 }}
-          className="flex flex-wrap justify-center gap-4 mb-12"
+          className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-10 sm:mb-12 w-full sm:w-auto"
         >
           <AnimatedButton variant="primary" href="#projects">
             <Sparkles size={16} /> Explore My Work

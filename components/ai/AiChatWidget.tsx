@@ -491,7 +491,7 @@ export default function AiChatWidget() {
 
   return (
     <>
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] right-[calc(1rem+env(safe-area-inset-right,0px))] sm:bottom-6 sm:right-6 z-[9999] pointer-events-auto">
         {/* Trigger Button */}
         <AnimatePresence>
           {!isOpen && (
@@ -502,10 +502,10 @@ export default function AiChatWidget() {
               whileHover={{ scale: 1.08 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsOpen(true)}
-              className="group relative p-4 rounded-full bg-gradient-to-r from-violet-600 via-fuchsia-600 to-indigo-600 text-white shadow-2xl shadow-violet-500/40 border border-white/20 flex items-center gap-2 font-semibold text-xs cursor-pointer"
-              aria-label="Ask AI Assistant"
+              className="group relative p-3.5 sm:p-4 rounded-full bg-gradient-to-r from-violet-600 via-fuchsia-600 to-indigo-600 text-white shadow-2xl shadow-violet-500/40 border border-white/20 flex items-center gap-2 font-semibold text-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-violet-400"
+              aria-label="Ask AI Assistant with Voice Input"
             >
-              <Mic size={20} className="animate-pulse text-emerald-400" />
+              <Mic size={20} className="animate-pulse text-emerald-400 shrink-0" />
               <span className="hidden sm:inline font-bold">Ask AI Assistant</span>
               <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-emerald-400 border-2 border-neutral-950 animate-ping" />
             </motion.button>
@@ -519,7 +519,7 @@ export default function AiChatWidget() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="w-[92vw] sm:w-[440px] h-[590px] bg-neutral-900/95 border border-white/10 rounded-3xl shadow-2xl backdrop-blur-2xl flex flex-col overflow-hidden relative"
+              className="w-[calc(100vw-2rem)] max-w-[440px] h-[calc(100vh-5rem)] max-h-[590px] bg-neutral-900/95 border border-white/10 rounded-3xl shadow-2xl backdrop-blur-2xl flex flex-col overflow-hidden relative"
             >
               {/* Header */}
               <div className="p-4 border-b border-white/[0.08] bg-neutral-950/80 flex items-center justify-between">
