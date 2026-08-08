@@ -389,7 +389,7 @@ export function subscribeProjects(callback: (projects: ProjectItem[]) => void): 
   const colRef = collection(db, 'projects');
   return onSnapshot(colRef, (snap) => {
     const list: ProjectItem[] = [];
-    snap.forEach((d) => list.push({ id: d.id, ...d.data() } as ProjectItem));
+    snap.forEach((d) => list.push({ ...d.data(), id: d.id } as ProjectItem));
     callback(list);
   }, () => callback([]));
 }
@@ -399,7 +399,7 @@ export async function getProjects(): Promise<ProjectItem[]> {
   try {
     const snap = await getDocs(collection(db, 'projects'));
     const list: ProjectItem[] = [];
-    snap.forEach((d) => list.push({ id: d.id, ...d.data() } as ProjectItem));
+    snap.forEach((d) => list.push({ ...d.data(), id: d.id } as ProjectItem));
     return list;
   } catch {
     return [];
@@ -414,7 +414,7 @@ export function subscribeSkills(callback: (skills: SkillItem[]) => void): () => 
   const colRef = collection(db, 'skills');
   return onSnapshot(colRef, (snap) => {
     const list: SkillItem[] = [];
-    snap.forEach((d) => list.push({ id: d.id, ...d.data() } as SkillItem));
+    snap.forEach((d) => list.push({ ...d.data(), id: d.id } as SkillItem));
     callback(list);
   }, () => callback([]));
 }
@@ -427,7 +427,7 @@ export function subscribeServices(callback: (services: ServiceItem[]) => void): 
   const colRef = collection(db, 'services');
   return onSnapshot(colRef, (snap) => {
     const list: ServiceItem[] = [];
-    snap.forEach((d) => list.push({ id: d.id, ...d.data() } as ServiceItem));
+    snap.forEach((d) => list.push({ ...d.data(), id: d.id } as ServiceItem));
     callback(list);
   }, () => callback([]));
 }
@@ -440,7 +440,7 @@ export function subscribeExperience(callback: (experiences: ExperienceItem[]) =>
   const colRef = collection(db, 'experience');
   return onSnapshot(colRef, (snap) => {
     const list: ExperienceItem[] = [];
-    snap.forEach((d) => list.push({ id: d.id, ...d.data() } as ExperienceItem));
+    snap.forEach((d) => list.push({ ...d.data(), id: d.id } as ExperienceItem));
     callback(list);
   }, () => callback([]));
 }
@@ -453,7 +453,7 @@ export function subscribeEducation(callback: (education: EducationItem[]) => voi
   const colRef = collection(db, 'education');
   return onSnapshot(colRef, (snap) => {
     const list: EducationItem[] = [];
-    snap.forEach((d) => list.push({ id: d.id, ...d.data() } as EducationItem));
+    snap.forEach((d) => list.push({ ...d.data(), id: d.id } as EducationItem));
     callback(list);
   }, () => callback([]));
 }
@@ -466,7 +466,7 @@ export function subscribeCertificates(callback: (certs: AwardItem[]) => void): (
   const colRef = collection(db, 'certificates');
   return onSnapshot(colRef, (snap) => {
     const list: AwardItem[] = [];
-    snap.forEach((d) => list.push({ id: d.id, ...d.data() } as AwardItem));
+    snap.forEach((d) => list.push({ ...d.data(), id: d.id } as AwardItem));
     callback(list);
   }, () => callback([]));
 }
@@ -479,7 +479,7 @@ export function subscribeBlogs(callback: (blogs: BlogPostItem[]) => void): () =>
   const colRef = collection(db, 'blogs');
   return onSnapshot(colRef, (snap) => {
     const list: BlogPostItem[] = [];
-    snap.forEach((d) => list.push({ id: d.id, ...d.data() } as BlogPostItem));
+    snap.forEach((d) => list.push({ ...d.data(), id: d.id } as BlogPostItem));
     callback(list);
   }, () => callback([]));
 }
@@ -700,7 +700,7 @@ export function subscribeCertificationsCollection(callback: (certs: Certificatio
   const colRef = collection(db, 'certifications');
   return onSnapshot(colRef, (snap) => {
     const list: CertificationRecord[] = [];
-    snap.forEach((d) => list.push({ id: d.id, ...d.data() } as CertificationRecord));
+    snap.forEach((d) => list.push({ ...d.data(), id: d.id } as CertificationRecord));
     callback(list);
   }, () => callback([]));
 }
@@ -740,7 +740,7 @@ export function subscribeBookingsCollection(callback: (list: import('@/types').B
   const colRef = collection(db, 'bookings');
   return onSnapshot(colRef, (snap) => {
     const list: import('@/types').Booking[] = [];
-    snap.forEach((d) => list.push({ id: d.id, ...d.data() } as import('@/types').Booking));
+    snap.forEach((d) => list.push({ ...d.data(), id: d.id } as import('@/types').Booking));
     list.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
     callback(list);
   }, () => callback([]));

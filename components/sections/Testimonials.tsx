@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Star, ChevronLeft, ChevronRight, Quote, Plus, X, Send, CheckCircle2 } from 'lucide-react';
+import { Star, ChevronLeft, ChevronRight, Quote, Plus, X, Send, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react';
 import SectionHeading from '@/components/ui/SectionHeading';
 import AnimatedButton from '@/components/ui/AnimatedButton';
 import { fadeInUp } from '@/utils/animations';
@@ -10,10 +10,13 @@ import { Review } from '@/types';
 
 export default function Testimonials() {
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(true);
   const [current, setCurrent] = useState(0);
+  const [showAll, setShowAll] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   // Form State
   const [formData, setFormData] = useState({
@@ -25,30 +28,61 @@ export default function Testimonials() {
   });
 
   useEffect(() => {
+    let unsub: (() => void) | undefined;
     let isMounted = true;
-    async function loadReviews() {
-      try {
-        const res = await fetch('/api/reviews');
-        const data = await res.json();
-        if (isMounted && data.success && data.reviews.length > 0) {
-          setReviews(data.reviews);
+
+    import('@/lib/store').then(({ subscribeApprovedReviews, getApprovedReviews }) => {
+      if (!isMounted) return;
+
+      // Subscribe to Realtime Firestore updates
+      unsub = subscribeApprovedReviews((list) => {
+        if (isMounted) {
+          setReviews(list);
+          setLoading(false);
         }
-      } catch {
-        // Fallback
-      }
-    }
-    loadReviews();
+      });
+
+      // Initial fetch fallback
+      getApprovedReviews().then((list) => {
+        if (isMounted && list.length > 0) {
+          setReviews((prev) => (prev.length === 0 ? list : prev));
+          setLoading(false);
+        } else if (isMounted) {
+          setLoading(false);
+        }
+      });
+    });
+
     return () => {
       isMounted = false;
+      if (unsub) unsub();
     };
   }, []);
 
-  const next = () => setCurrent((prev) => (prev + 1) % reviews.length);
-  const prev = () => setCurrent((prev) => (prev - 1 + reviews.length) % reviews.length);
+  // Limit to 5 reviews initially
+  const visibleReviews = showAll ? reviews : reviews.slice(0, 5);
+
+  const safeCurrentIndex = visibleReviews.length > 0 ? (current >= visibleReviews.length ? 0 : current) : 0;
+
+  const next = () => {
+    if (visibleReviews.length === 0) return;
+    setCurrent((prev) => (prev + 1) % visibleReviews.length);
+  };
+
+  const prev = () => {
+    if (visibleReviews.length === 0) return;
+    setCurrent((prev) => (prev - 1 + visibleReviews.length) % visibleReviews.length);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.name.trim() || !formData.role.trim() || !formData.content.trim()) {
+      setSubmitError('Please fill in all required fields.');
+      return;
+    }
+
     setIsLoading(true);
+    setSubmitError('');
 
     try {
       const res = await fetch('/api/reviews', {
@@ -64,10 +98,12 @@ export default function Testimonials() {
         setTimeout(() => {
           setSubmitSuccess(false);
           setIsModalOpen(false);
-        }, 3000);
+        }, 2500);
+      } else {
+        setSubmitError(data.message || 'Failed to submit review to Firebase.');
       }
     } catch {
-      // Error handling
+      setSubmitError('Firebase connection error. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -82,15 +118,23 @@ export default function Testimonials() {
         <div className="flex justify-center mb-12">
           <button
             suppressHydrationWarning
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => {
+              setSubmitError('');
+              setSubmitSuccess(false);
+              setIsModalOpen(true);
+            }}
             className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs font-semibold tracking-wider uppercase bg-violet-500/10 border border-violet-500/30 text-violet-300 hover:bg-violet-500/20 hover:scale-105 transition-all shadow-lg shadow-violet-500/10"
           >
             <Plus size={16} /> Submit Your Review
           </button>
         </div>
 
-        {/* Reviews Carousel */}
-        {reviews.length > 0 ? (
+        {/* Reviews Render */}
+        {loading ? (
+          <div className="text-center py-12 text-white/40 text-sm animate-pulse">
+            Loading reviews from Firebase...
+          </div>
+        ) : visibleReviews.length > 0 ? (
           <motion.div
             variants={fadeInUp}
             initial="hidden"
@@ -103,37 +147,49 @@ export default function Testimonials() {
 
               <AnimatePresence mode="wait">
                 <motion.div
-                  key={current}
+                  key={safeCurrentIndex}
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <div className="flex gap-1 mb-6">
-                    {Array.from({ length: reviews[current]?.rating || 5 }).map((_, i) => (
-                      <Star key={i} size={16} className="fill-amber-400 text-amber-400" />
-                    ))}
+                  <div className="flex justify-between items-center mb-6">
+                    <div className="flex gap-1">
+                      {Array.from({ length: visibleReviews[safeCurrentIndex]?.rating || 5 }).map((_, i) => (
+                        <Star key={i} size={16} className="fill-amber-400 text-amber-400" />
+                      ))}
+                    </div>
+                    {visibleReviews[safeCurrentIndex]?.createdAt && (
+                      <span className="text-[11px] text-white/40 font-mono">
+                        {new Date(visibleReviews[safeCurrentIndex].createdAt).toLocaleDateString(undefined, {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                        })}
+                      </span>
+                    )}
                   </div>
 
                   <p className="text-base md:text-lg text-white/80 leading-relaxed mb-8 italic">
-                    &ldquo;{reviews[current]?.content}&rdquo;
+                    &ldquo;{visibleReviews[safeCurrentIndex]?.content}&rdquo;
                   </p>
 
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-violet-500/30">
-                      {reviews[current]?.name?.[0] || 'V'}
+                      {visibleReviews[safeCurrentIndex]?.name?.[0] || 'V'}
                     </div>
                     <div>
-                      <div className="text-sm font-bold text-white">{reviews[current]?.name}</div>
+                      <div className="text-sm font-bold text-white">{visibleReviews[safeCurrentIndex]?.name}</div>
                       <div className="text-xs text-violet-300/80 font-medium">
-                        {reviews[current]?.role} {reviews[current]?.company ? `at ${reviews[current]?.company}` : ''}
+                        {visibleReviews[safeCurrentIndex]?.role}{' '}
+                        {visibleReviews[safeCurrentIndex]?.company ? `at ${visibleReviews[safeCurrentIndex]?.company}` : ''}
                       </div>
                     </div>
                   </div>
                 </motion.div>
               </AnimatePresence>
 
-              {reviews.length > 1 && (
+              {visibleReviews.length > 1 && (
                 <div className="flex gap-3 mt-8 justify-end">
                   <button
                     onClick={prev}
@@ -153,24 +209,45 @@ export default function Testimonials() {
               )}
             </div>
 
-            {reviews.length > 1 && (
+            {/* Pagination Dots */}
+            {visibleReviews.length > 1 && (
               <div className="flex justify-center gap-2 mt-6">
-                {reviews.map((_, i) => (
+                {visibleReviews.map((_, i) => (
                   <button
                     key={i}
                     onClick={() => setCurrent(i)}
                     className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                      i === current ? 'w-6 bg-violet-500' : 'bg-white/20 hover:bg-white/40'
+                      i === safeCurrentIndex ? 'w-6 bg-violet-500' : 'bg-white/20 hover:bg-white/40'
                     }`}
                     aria-label={`Go to review ${i + 1}`}
                   />
                 ))}
               </div>
             )}
+
+            {/* More Reviews Button */}
+            {reviews.length > 5 && (
+              <div className="flex justify-center mt-10">
+                <button
+                  onClick={() => setShowAll((prev) => !prev)}
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs font-semibold tracking-wider uppercase bg-white/[0.04] hover:bg-violet-500/20 border border-white/10 hover:border-violet-500/30 text-white/80 hover:text-white transition-all shadow-md"
+                >
+                  {showAll ? (
+                    <>
+                      Show Less Reviews <ChevronUp size={16} />
+                    </>
+                  ) : (
+                    <>
+                      More Reviews ({reviews.length - 5} More) <ChevronDown size={16} />
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
           </motion.div>
         ) : (
           <div className="text-center py-12 text-white/40 text-sm">
-            No Data Available. Be the first to submit a review!
+            No reviews yet. Be the first to submit a review!
           </div>
         )}
       </div>
@@ -201,19 +278,25 @@ export default function Testimonials() {
 
               <h3 className="text-xl font-bold text-white mb-2">Submit Your Review</h3>
               <p className="text-xs text-white/50 mb-6">
-                Share your experience working with Abishek. Your review will be reviewed by admin before publishing.
+                Share your experience working with Abishek. Your review will be saved live to Firebase.
               </p>
 
               {submitSuccess ? (
                 <div className="py-8 text-center space-y-3">
-                  <CheckCircle2 size={48} className="text-emerald-400 mx-auto" />
+                  <CheckCircle2 size={48} className="text-emerald-400 mx-auto animate-bounce" />
                   <h4 className="text-lg font-bold text-white">Review Submitted!</h4>
                   <p className="text-xs text-white/60">
-                    Thank you! Your feedback has been sent for admin moderation.
+                    Thank you! Your feedback has been saved live to Firebase.
                   </p>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+                  {submitError && (
+                    <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
+                      {submitError}
+                    </div>
+                  )}
+
                   <div>
                     <label className="block text-white/70 mb-1.5 font-medium">Your Name *</label>
                     <input
@@ -285,8 +368,11 @@ export default function Testimonials() {
                     />
                   </div>
 
-                  <AnimatedButton variant="primary" className="w-full justify-center">
-                    {isLoading ? 'Submitting...' : 'Submit Review'} <Send size={14} />
+                  <AnimatedButton
+                    variant="primary"
+                    className="w-full justify-center disabled:opacity-50"
+                  >
+                    {isLoading ? 'Submitting to Firebase...' : 'Submit Review'} <Send size={14} />
                   </AnimatedButton>
                 </form>
               )}

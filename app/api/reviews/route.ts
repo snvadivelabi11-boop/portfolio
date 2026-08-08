@@ -11,6 +11,9 @@ const reviewSchema = z.object({
   avatar: z.string().url().or(z.literal('')).optional(),
 });
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET() {
   try {
     const reviews = await getApprovedReviews();

@@ -423,15 +423,57 @@ export default function AdminDashboard() {
 
 
   const handleDeleteMessage = async (id: string) => {
-    setMessages((prev) => prev.filter((m) => m.id !== id));
-    await fetch(`/api/admin/messages?id=${id}`, { method: 'DELETE' });
-    notifySuccess('Message deleted!');
+    try {
+      const res = await fetch(`/api/admin/messages?id=${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        setMessages((prev) => prev.filter((m) => m.id !== id));
+        if (selectedMessage && selectedMessage.id === id) {
+          setSelectedMessage(null);
+        }
+        notifySuccess('Message permanently deleted from Firestore!');
+      } else {
+        setErrorMsg('Failed to delete message from Firestore.');
+      }
+    } catch {
+      setErrorMsg('Network error deleting message.');
+    }
+  };
+
+  const handleUpdateReviewStatus = async (id: string, status: 'approved' | 'rejected') => {
+    try {
+      const res = await fetch('/api/admin/reviews', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setReviews((prev) =>
+          prev.map((r) => (r.id === id ? { ...r, status } : r))
+        );
+        notifySuccess(`Review marked as ${status}!`);
+      } else {
+        setErrorMsg('Failed to update review status.');
+      }
+    } catch {
+      setErrorMsg('Network error updating review status.');
+    }
   };
 
   const handleDeleteReview = async (id: string) => {
-    setReviews((prev) => prev.filter((r) => r.id !== id));
-    await fetch(`/api/admin/reviews?id=${id}`, { method: 'DELETE' });
-    notifySuccess('Review deleted!');
+    try {
+      const res = await fetch(`/api/admin/reviews?id=${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        setReviews((prev) => prev.filter((r) => r.id !== id));
+        notifySuccess('Review permanently deleted from Firestore!');
+      } else {
+        setErrorMsg('Failed to delete review from Firestore.');
+      }
+    } catch {
+      setErrorMsg('Network error deleting review.');
+    }
   };
 
   const handleUploadMedia = async (e: React.FormEvent) => {
@@ -2234,14 +2276,59 @@ export default function AdminDashboard() {
                 </div>
               ) : (
                 reviews.map((rev) => (
-                  <div key={rev.id} className="p-6 rounded-2xl border border-white/[0.08] bg-white/[0.02] flex justify-between items-center">
-                    <div>
-                      <div className="font-bold text-white">{rev.name} ({rev.role})</div>
-                      <p className="text-white/60 mt-1 italic">&ldquo;{rev.content}&rdquo;</p>
+                  <div key={rev.id} className="p-6 rounded-2xl border border-white/[0.08] bg-white/[0.02] flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="space-y-1.5 flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-white text-sm">{rev.name}</span>
+                        <span className="text-white/50 text-xs">({rev.role} {rev.company ? `at ${rev.company}` : ''})</span>
+                        <span
+                          className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${
+                            rev.status === 'approved'
+                              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                              : rev.status === 'rejected'
+                              ? 'bg-red-500/10 text-red-400 border-red-500/20'
+                              : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                          }`}
+                        >
+                          {rev.status ? rev.status.toUpperCase() : 'PENDING'}
+                        </span>
+                      </div>
+                      <div className="flex gap-1">
+                        {Array.from({ length: rev.rating || 5 }).map((_, i) => (
+                          <Star key={i} size={13} className="fill-amber-400 text-amber-400" />
+                        ))}
+                      </div>
+                      <p className="text-white/70 text-xs italic leading-relaxed">&ldquo;{rev.content}&rdquo;</p>
+                      <div className="text-[10px] text-white/40 font-mono">
+                        Submitted: {rev.createdAt ? new Date(rev.createdAt).toLocaleString() : 'N/A'}
+                      </div>
                     </div>
-                    <button onClick={() => handleDeleteReview(rev.id)} className="p-2 text-white/40 hover:text-red-400">
-                      <Trash2 size={16} />
-                    </button>
+
+                    <div className="flex items-center gap-2 self-start md:self-center flex-shrink-0">
+                      {rev.status !== 'approved' && (
+                        <button
+                          onClick={() => handleUpdateReviewStatus(rev.id, 'approved')}
+                          className="px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 text-xs font-semibold flex items-center gap-1 transition-all"
+                        >
+                          <CheckCircle2 size={14} /> Approve
+                        </button>
+                      )}
+                      {rev.status !== 'rejected' && (
+                        <button
+                          onClick={() => handleUpdateReviewStatus(rev.id, 'rejected')}
+                          className="px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/20 text-xs font-semibold flex items-center gap-1 transition-all"
+                        >
+                          <XCircle size={14} /> Reject
+                        </button>
+                      )}
+                      <button
+                        onClick={() => handleDeleteReview(rev.id)}
+                        className="p-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 transition-all"
+                        title="Delete Review"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </div>
                 ))
               )}

@@ -43,7 +43,7 @@ export async function getAllBookings(): Promise<Booking[]> {
       const querySnapshot = await getDocs(q);
       const firestoreBookings: Booking[] = [];
       querySnapshot.forEach((docSnap) => {
-        firestoreBookings.push({ id: docSnap.id, ...docSnap.data() } as Booking);
+        firestoreBookings.push({ ...docSnap.data(), id: docSnap.id } as Booking);
       });
       return firestoreBookings;
     } catch {
@@ -57,7 +57,7 @@ export async function createBooking(
   bookingData: Omit<Booking, 'id' | 'status' | 'createdAt'>
 ): Promise<Booking> {
   const newBooking: Booking = {
-    id: `bk-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+    id: '',
     date: sanitizeInput(bookingData.date || ''),
     time: sanitizeInput(bookingData.time || ''),
     name: sanitizeInput(bookingData.name),
@@ -74,11 +74,20 @@ export async function createBooking(
 
   if (db) {
     try {
-      const docRef = await addDoc(collection(db, 'bookings'), newBooking);
+      const payload = { ...newBooking };
+      delete (payload as Partial<Booking>).id;
+      const cleanPayload = Object.fromEntries(
+        Object.entries(payload).filter(([, val]) => val !== undefined)
+      );
+      const docRef = await addDoc(collection(db, 'bookings'), cleanPayload);
       newBooking.id = docRef.id;
-    } catch {
-      // Fallback
+    } catch (err) {
+      console.error('[createBooking Error]:', err);
     }
+  }
+
+  if (!newBooking.id) {
+    newBooking.id = `bk-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
   }
 
   bookingsStore.unshift(newBooking);
@@ -119,8 +128,8 @@ END:VCALENDAR`;
         googleMeetLink,
         calendarIcsData: icsData,
       });
-    } catch {
-      // Fallback
+    } catch (err) {
+      console.error('[approveBooking Error]:', err);
     }
   }
 
@@ -152,19 +161,22 @@ export async function rejectBooking(id: string): Promise<boolean> {
     try {
       const bookingRef = doc(db, 'bookings', id);
       await updateDoc(bookingRef, { status: 'Rejected' });
-    } catch {
-      // Fallback
+    } catch (err) {
+      console.error('[rejectBooking Error]:', err);
+      return false;
     }
   }
   return true;
 }
 
 export async function deleteBooking(id: string): Promise<boolean> {
+  if (!id) return false;
   if (db) {
     try {
       await deleteDoc(doc(db, 'bookings', id));
-    } catch {
-      // Fallback
+    } catch (err) {
+      console.error('[deleteBooking Error]:', err);
+      return false;
     }
   }
   bookingsStore = bookingsStore.filter((b) => b.id !== id);
@@ -181,15 +193,44 @@ export async function getApprovedReviews(): Promise<Review[]> {
       const querySnapshot = await getDocs(q);
       const firestoreReviews: Review[] = [];
       querySnapshot.forEach((docSnap) => {
-        const r = { id: docSnap.id, ...docSnap.data() } as Review;
-        if (r.status === 'approved') firestoreReviews.push(r);
+        const r = { ...docSnap.data(), id: docSnap.id } as Review;
+        if (r.status !== 'rejected') firestoreReviews.push(r);
       });
       return firestoreReviews;
-    } catch {
-      // Fallback
+    } catch (err) {
+      console.error('[getApprovedReviews Error]:', err);
     }
   }
   return [];
+}
+
+export function subscribeApprovedReviews(callback: (reviews: Review[]) => void): () => void {
+  if (typeof window === 'undefined' || !db) {
+    callback([]);
+    return () => {};
+  }
+
+  try {
+    const q = query(collection(db, 'reviews'), orderBy('createdAt', 'desc'));
+    return onSnapshot(
+      q,
+      (snapshot) => {
+        const list: Review[] = [];
+        snapshot.forEach((docSnap) => {
+          const r = { ...docSnap.data(), id: docSnap.id } as Review;
+          if (r.status !== 'rejected') {
+            list.push(r);
+          }
+        });
+        callback(list);
+      },
+      () => callback([])
+    );
+  } catch (err) {
+    console.error('[subscribeApprovedReviews Error]:', err);
+    callback([]);
+    return () => {};
+  }
 }
 
 export async function getAllReviews(): Promise<Review[]> {
@@ -199,11 +240,11 @@ export async function getAllReviews(): Promise<Review[]> {
       const querySnapshot = await getDocs(q);
       const firestoreReviews: Review[] = [];
       querySnapshot.forEach((docSnap) => {
-        firestoreReviews.push({ id: docSnap.id, ...docSnap.data() } as Review);
+        firestoreReviews.push({ ...docSnap.data(), id: docSnap.id } as Review);
       });
       return firestoreReviews;
-    } catch {
-      // Fallback
+    } catch (err) {
+      console.error('[getAllReviews Error]:', err);
     }
   }
   return [];
@@ -211,24 +252,33 @@ export async function getAllReviews(): Promise<Review[]> {
 
 export async function submitReview(review: Omit<Review, 'id' | 'status' | 'createdAt'>): Promise<Review> {
   const newReview: Review = {
-    id: `rev-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+    id: '',
     name: sanitizeInput(review.name),
     role: sanitizeInput(review.role),
     company: review.company ? sanitizeInput(review.company) : undefined,
     content: sanitizeInput(review.content),
     rating: Math.min(5, Math.max(1, review.rating)),
     avatar: review.avatar ? sanitizeInput(review.avatar) : undefined,
-    status: 'pending',
+    status: 'approved',
     createdAt: new Date().toISOString(),
   };
 
   if (db) {
     try {
-      const docRef = await addDoc(collection(db, 'reviews'), newReview);
+      const payload = { ...newReview };
+      delete (payload as Partial<Review>).id;
+      const cleanPayload = Object.fromEntries(
+        Object.entries(payload).filter(([, val]) => val !== undefined)
+      );
+      const docRef = await addDoc(collection(db, 'reviews'), cleanPayload);
       newReview.id = docRef.id;
-    } catch {
-      // Fallback
+    } catch (err) {
+      console.error('[submitReview Error]:', err);
     }
+  }
+
+  if (!newReview.id) {
+    newReview.id = `rev-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
   }
 
   reviewsStore.unshift(newReview);
@@ -236,11 +286,13 @@ export async function submitReview(review: Omit<Review, 'id' | 'status' | 'creat
 }
 
 export async function updateReviewStatus(id: string, status: 'approved' | 'rejected'): Promise<boolean> {
+  if (!id) return false;
   if (db) {
     try {
       await updateDoc(doc(db, 'reviews', id), { status });
-    } catch {
-      // Fallback
+    } catch (err) {
+      console.error('[updateReviewStatus Error]:', err);
+      return false;
     }
   }
 
@@ -250,11 +302,13 @@ export async function updateReviewStatus(id: string, status: 'approved' | 'rejec
 }
 
 export async function deleteReview(id: string): Promise<boolean> {
+  if (!id) return false;
   if (db) {
     try {
       await deleteDoc(doc(db, 'reviews', id));
-    } catch {
-      // Fallback
+    } catch (err) {
+      console.error('[deleteReview Error]:', err);
+      return false;
     }
   }
   reviewsStore = reviewsStore.filter((r) => r.id !== id);
@@ -271,11 +325,11 @@ export async function getContactMessages(): Promise<ContactMessage[]> {
       const querySnapshot = await getDocs(q);
       const firestoreMessages: ContactMessage[] = [];
       querySnapshot.forEach((docSnap) => {
-        firestoreMessages.push({ id: docSnap.id, ...docSnap.data() } as ContactMessage);
+        firestoreMessages.push({ ...docSnap.data(), id: docSnap.id } as ContactMessage);
       });
       return firestoreMessages;
-    } catch {
-      // Fallback
+    } catch (err) {
+      console.error('[getContactMessages Error]:', err);
     }
   }
   return [];
@@ -289,7 +343,7 @@ export async function saveContactMessage(msg: {
   message: string;
 }): Promise<ContactMessage> {
   const newMsg: ContactMessage = {
-    id: `msg-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+    id: '',
     name: sanitizeInput(msg.name),
     email: sanitizeInput(msg.email),
     phone: msg.phone ? sanitizeInput(msg.phone) : undefined,
@@ -302,11 +356,20 @@ export async function saveContactMessage(msg: {
 
   if (db) {
     try {
-      const docRef = await addDoc(collection(db, 'messages'), newMsg);
+      const payload = { ...newMsg };
+      delete (payload as Partial<ContactMessage>).id;
+      const cleanPayload = Object.fromEntries(
+        Object.entries(payload).filter(([, val]) => val !== undefined)
+      );
+      const docRef = await addDoc(collection(db, 'messages'), cleanPayload);
       newMsg.id = docRef.id;
-    } catch {
-      // Fallback
+    } catch (err) {
+      console.error('[saveContactMessage Error]:', err);
     }
+  }
+
+  if (!newMsg.id) {
+    newMsg.id = `msg-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
   }
 
   messagesStore.unshift(newMsg);
@@ -317,6 +380,7 @@ export async function updateContactMessageStatus(
   id: string,
   status: 'New' | 'Read' | 'Replied'
 ): Promise<boolean> {
+  if (!id) return false;
   const read = status !== 'New';
 
   if (db) {
@@ -325,6 +389,7 @@ export async function updateContactMessageStatus(
       await updateDoc(msgRef, { status, read });
     } catch (err) {
       console.error('[updateContactMessageStatus Error]:', err);
+      return false;
     }
   }
 
@@ -337,11 +402,13 @@ export async function updateContactMessageStatus(
 }
 
 export async function deleteContactMessage(id: string): Promise<boolean> {
+  if (!id) return false;
   if (db) {
     try {
       await deleteDoc(doc(db, 'messages', id));
     } catch (err) {
       console.error('[deleteContactMessage Error]:', err);
+      return false;
     }
   }
   messagesStore = messagesStore.filter((m) => m.id !== id);
@@ -359,7 +426,7 @@ export function subscribeMessages(callback: (messages: ContactMessage[]) => void
     return onSnapshot(q, (snapshot) => {
       const list: ContactMessage[] = [];
       snapshot.forEach((docSnap) => {
-        list.push({ id: docSnap.id, ...docSnap.data() } as ContactMessage);
+        list.push({ ...docSnap.data(), id: docSnap.id } as ContactMessage);
       });
       callback(list);
     }, () => callback([]));
