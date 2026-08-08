@@ -1,4 +1,4 @@
-import { getSystemPrompt } from '@/lib/systemPrompt';
+import { getLiveSystemPrompt } from '@/lib/systemPrompt';
 
 export const DEFAULT_OPENROUTER_MODEL = 'google/gemini-2.5-flash';
 export const FALLBACK_OPENROUTER_MODEL = 'google/gemini-2.0-flash-exp';
@@ -30,7 +30,7 @@ export async function callOpenRouterAI(
     };
   }
 
-  const systemInstruction = getSystemPrompt();
+  const systemInstruction = await getLiveSystemPrompt();
 
   // Build full message list
   const messages: ChatMessagePayload[] = [

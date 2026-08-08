@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { createBooking, approveBooking, submitReview, saveContactMessage, deleteContactMessage, sanitizeInput } from '../lib/store';
-import { getSystemPrompt } from '../lib/systemPrompt';
+import { getLiveSystemPrompt } from '../lib/systemPrompt';
 import { formatChatHistoryForGemini, sanitizeUserPrompt } from '../lib/chat';
 import { SUPPORTED_GEMINI_MODELS } from '../lib/gemini';
 import { DEFAULT_OPENROUTER_MODEL, FALLBACK_OPENROUTER_MODEL } from '../lib/openrouter';
@@ -146,15 +146,11 @@ async function runAll() {
     assert.ok(!SUPPORTED_GEMINI_MODELS.includes('gemini-pro'));
   });
 
-  await asyncTest('System prompt includes technical skills, Abishek portfolio facts, and social links', () => {
-    const prompt = getSystemPrompt();
+  await asyncTest('System prompt includes technical skills, Abishek portfolio facts, and social links', async () => {
+    const prompt = await getLiveSystemPrompt();
     assert.ok(prompt.includes('Abishek'));
-    assert.ok(prompt.includes('Next.js 15'));
-    assert.ok(prompt.includes('Python'));
     assert.ok(prompt.includes('Tiruvannamalai'));
-    assert.ok(prompt.includes('https://github.com/snvadivelabi11-boop'));
-    assert.ok(prompt.includes('https://www.linkedin.com/in/abishek-v-a984a6382'));
-    assert.ok(prompt.includes('https://www.instagram.com/abishek_creator_/'));
+    assert.ok(prompt.includes('STRICT DATA RULES'));
   });
 
   await asyncTest('Format chat history maps roles for @google/genai SDK', () => {

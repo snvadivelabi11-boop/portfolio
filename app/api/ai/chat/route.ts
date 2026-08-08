@@ -3,7 +3,9 @@ import { z } from 'zod';
 import { callOpenRouterAI } from '@/lib/openrouter';
 import { sanitizeUserPrompt } from '@/lib/chat';
 import { saveContactMessage } from '@/lib/store';
-import { personalStats } from '@/data';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 const chatRequestSchema = z.object({
   message: z.string().optional(),
@@ -67,7 +69,7 @@ export async function POST(request: Request) {
     ) {
       await saveContactMessage({
         name: 'AI Chat Lead',
-        email: personalStats.email,
+        email: process.env.ADMIN_EMAIL || 'SNVADIVEL11@gmail.com',
         subject: 'New Inquiry via OpenRouter AI Assistant',
         message: `Captured Chat Inquiry:\n${sanitizedPrompt}`,
       }).catch(() => {});
