@@ -9,7 +9,7 @@ export const siteConfig = {
   name: 'Abishek',
   title: 'Abishek | Full Stack Developer & AI Creator',
   description:
-    'Abishek is a Full Stack Developer & AI Creator based in Tiruvannamalai. Specializing in Next.js, React, TypeScript, Python, AI Automation, API Development, and UI/UX Design.',
+    'Abishek is a Full Stack Developer & AI Creator building modern web applications, Next.js & React systems, AI automations, and scalable REST APIs.',
   shortDescription:
     'Full Stack Developer & AI Creator crafting exceptional digital experiences.',
   url: process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'https://www.abishektech.online',

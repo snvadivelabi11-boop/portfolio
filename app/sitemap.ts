@@ -5,7 +5,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const siteUrl = rawUrl.replace(/\/+$/, '');
   const currentDate = new Date().toISOString();
 
-  // Core pages
+  // Core pages and section anchors
   const routes: MetadataRoute.Sitemap = [
     {
       url: siteUrl,
@@ -44,10 +44,40 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     },
     {
+      url: `${siteUrl}/#certificates`,
+      lastModified: currentDate,
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
       url: `${siteUrl}/#contact`,
       lastModified: currentDate,
       changeFrequency: 'yearly',
       priority: 0.8,
+    },
+    {
+      url: `${siteUrl}/projects`,
+      lastModified: currentDate,
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    {
+      url: `${siteUrl}/blog`,
+      lastModified: currentDate,
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
+      url: `${siteUrl}/privacy`,
+      lastModified: currentDate,
+      changeFrequency: 'yearly',
+      priority: 0.3,
+    },
+    {
+      url: `${siteUrl}/terms`,
+      lastModified: currentDate,
+      changeFrequency: 'yearly',
+      priority: 0.3,
     },
   ];
 

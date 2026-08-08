@@ -8,17 +8,17 @@ import PageContent from "@/components/layout/PageContent";
 // Page-Level Metadata (Server Component)
 // ============================================================
 export const metadata: Metadata = {
-  title: "Abishek | Full Stack Developer, AI Automation Engineer & Software Engineer",
+  title: "Abishek | Full Stack Developer, React & Next.js Engineer",
   description:
-    "Abishek is a Full Stack Developer, AI Automation Engineer, and Software Engineer based in San Francisco, CA. Specializing in Next.js, React, TypeScript, Python, AI/ML, and enterprise web applications. Explore projects, skills, and services.",
+    "Explore the portfolio of Abishek — a Full Stack Developer & AI Creator building modern web applications, Next.js & React systems, and AI automations.",
   keywords: getAllKeywords(),
   alternates: {
     canonical: getCanonicalUrl(),
   },
   openGraph: {
-    title: "Abishek | Full Stack Developer & AI Automation Engineer",
+    title: "Abishek | Full Stack Developer, React & Next.js Engineer",
     description:
-      "Explore the portfolio of Abishek — a Full Stack Developer and AI Automation Engineer crafting exceptional digital experiences with Next.js, React, TypeScript, and AI.",
+      "Explore the portfolio of Abishek — a Full Stack Developer & AI Creator building modern web applications, Next.js & React systems, and AI automations.",
     url: siteConfig.url,
     type: "website",
     images: [
@@ -32,9 +32,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Abishek | Full Stack Developer & AI Automation Engineer",
+    title: "Abishek | Full Stack Developer, React & Next.js Engineer",
     description:
-      "Full Stack Developer & AI Creator crafting exceptional digital experiences with modern technology.",
+      "Explore the portfolio of Abishek — a Full Stack Developer & AI Creator building modern web applications, Next.js & React systems, and AI automations.",
     images: [siteConfig.ogImage],
   },
 };

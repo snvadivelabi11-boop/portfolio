@@ -87,7 +87,7 @@ export default function About() {
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={about.profilePhoto}
-                      alt={activeName}
+                      alt={`${activeName} — Full Stack Developer & AI Creator`}
                       width={170}
                       height={170}
                       className="w-full h-full object-cover object-center rounded-2xl transition-transform duration-500 group-hover:scale-105"
