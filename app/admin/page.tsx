@@ -619,7 +619,7 @@ export default function AdminDashboard() {
             </Link>
             <h1 className="text-sm sm:text-base font-bold tracking-tight">
               <span className="bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
-                Abishek Digital
+                Abishek Tech
               </span>{' '}
               Enterprise CMS
             </h1>

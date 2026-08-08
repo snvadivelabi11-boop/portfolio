@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   }
 
   return {
-    title: `${post.title} | Abishek Digital Blog`,
+    title: `${post.title} | Abishek Tech Blog`,
     description: post.excerpt,
     keywords: post.tags,
     openGraph: {

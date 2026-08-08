@@ -32,7 +32,7 @@ export default function Footer() {
           <div className="sm:col-span-2">
             <Link href="/" className="text-2xl font-extrabold tracking-tight">
               <span className="bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
-                {activeName} Digital
+                {activeName} Tech
               </span>
               <span className="text-white/40">.</span>
             </Link>
@@ -104,7 +104,7 @@ export default function Footer() {
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-white/[0.06]">
           <p className="text-xs text-white/40 flex items-center gap-1">
-            © {new Date().getFullYear()} Abishek Digital. All Rights Reserved.
+            © {new Date().getFullYear()} Abishek Tech. All Rights Reserved.
           </p>
           <motion.button
             suppressHydrationWarning

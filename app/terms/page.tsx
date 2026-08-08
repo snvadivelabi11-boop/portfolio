@@ -5,8 +5,8 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/sections/Footer';
 
 export const metadata: Metadata = {
-  title: 'Terms of Service | Abishek Digital',
-  description: 'Terms of service agreement for Abishek Digital.',
+  title: 'Terms of Service | Abishek Tech',
+  description: 'Terms of service agreement for Abishek Tech.',
 };
 
 export default function TermsOfService() {
@@ -35,7 +35,7 @@ export default function TermsOfService() {
           <section className="space-y-3">
             <h2 className="text-base font-bold text-white">1. Engagement &amp; Services</h2>
             <p>
-              Abishek Digital provides full-stack software engineering, Next.js web development, AI workflow automation, API development, and UI/UX design services under mutually agreed statement of work (SOW) contracts.
+              Abishek Tech provides full-stack software engineering, Next.js web development, AI workflow automation, API development, and UI/UX design services under mutually agreed statement of work (SOW) contracts.
             </p>
           </section>
 
@@ -49,7 +49,7 @@ export default function TermsOfService() {
           <section className="space-y-3">
             <h2 className="text-base font-bold text-white">3. Review Moderation &amp; Acceptable Use</h2>
             <p>
-              Visitors submitting reviews or contacting Abishek Digital agree to provide accurate information and refrain from submitting harmful, defamatory, or malicious code payloads. Reviews undergo administrative approval prior to publication.
+              Visitors submitting reviews or contacting Abishek Tech agree to provide accurate information and refrain from submitting harmful, defamatory, or malicious code payloads. Reviews undergo administrative approval prior to publication.
             </p>
           </section>
 

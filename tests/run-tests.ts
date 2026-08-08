@@ -13,7 +13,7 @@ import { validateMediaFile } from '../lib/mediaStorage';
 import { getSystemMetrics } from '../lib/platformMonitor';
 import { subscribeAdminAuthState, logoutAdminFromFirebase } from '../lib/adminAuth';
 
-console.log('🚀 Running Abishek Digital Enterprise Test Suite...\n');
+console.log('🚀 Running Abishek Tech Enterprise Test Suite...\n');
 
 let passed = 0;
 let failed = 0;

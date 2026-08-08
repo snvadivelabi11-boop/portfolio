@@ -54,7 +54,7 @@ export default function Navbar() {
             className="text-2xl font-extrabold tracking-tight flex items-center gap-2 group"
           >
             <span className="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-indigo-400 bg-clip-text text-transparent">
-              Abishek Digital
+              Abishek Tech
             </span>
             <span className="w-2 h-2 rounded-full bg-emerald-400 group-hover:animate-ping" />
           </Link>

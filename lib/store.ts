@@ -103,7 +103,7 @@ export async function approveBooking(id: string): Promise<Booking | null> {
   const dateFormatted = (booking?.date || new Date().toISOString().split('T')[0]).replace(/-/g, '');
   const icsData = `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Abishek Digital//Strategy Call//EN
+PRODID:-//Abishek Tech//Strategy Call//EN
 BEGIN:VEVENT
 SUMMARY:Strategy Call with Abishek (${booking?.purpose || 'Consultation'})
 DESCRIPTION:Virtual strategy call with Abishek. Google Meet: ${googleMeetLink}
