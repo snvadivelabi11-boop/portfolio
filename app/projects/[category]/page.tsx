@@ -19,13 +19,14 @@ import Link from 'next/link';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/sections/Footer';
 import SectionHeading from '@/components/ui/SectionHeading';
-import { projectCategories, projects as defaultProjects } from '@/data';
-import { useLiveProjects } from '@/hooks/useFirestoreCMS';
+import { projectCategories as defaultCategories, projects as defaultProjects } from '@/data';
+import { useLiveProjects, useLiveProjectCategories } from '@/hooks/useFirestoreCMS';
 
 const categoryIcons: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
   GraduationCap,
   Layout,
   Bot,
+  Layers,
 };
 
 export default function CategoryProjectsPage({ params }: { params: Promise<{ category: string }> }) {
@@ -33,7 +34,10 @@ export default function CategoryProjectsPage({ params }: { params: Promise<{ cat
   const categorySlug = resolvedParams.category;
 
   const { projects: liveProjects } = useLiveProjects();
+  const { categories: liveCategories } = useLiveProjectCategories();
+
   const allProjects = liveProjects.length > 0 ? liveProjects : defaultProjects;
+  const projectCategories = liveCategories.length > 0 ? liveCategories : defaultCategories;
 
   const category = projectCategories.find((c) => c.id === categorySlug) || {
     id: categorySlug,
@@ -43,7 +47,7 @@ export default function CategoryProjectsPage({ params }: { params: Promise<{ cat
     icon: 'Layers',
   };
 
-  const IconComponent = categoryIcons[category.icon] || Layers;
+  const IconComponent = (category.icon && categoryIcons[category.icon]) ? categoryIcons[category.icon] : Layers;
 
   // Helper to resolve category slug
   const getCategorySlug = (p: { category?: string; categorySlug?: string }) => {

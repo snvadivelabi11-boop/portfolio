@@ -2,11 +2,26 @@
 
 import { useState, useEffect } from 'react';
 import {
-  ProfileData, HeroData, AboutData, SocialLinksData, ContactData, ProjectItem, SkillItem, ServiceItem, ExperienceItem, EducationItem, CertificationItem,
-  DEFAULT_PROFILE, DEFAULT_HERO, DEFAULT_ABOUT, DEFAULT_SOCIALS, DEFAULT_CONTACT,
-  subscribeProfile, subscribeHero, subscribeAbout, subscribeSocials, subscribeContact, subscribeProjects, subscribeSkills, subscribeServices, subscribeExperience,
+  ProfileData, HeroData, AboutData, SocialLinksData, ContactData, ProjectItem, ProjectCategoryRecord, SkillItem, ServiceItem, ExperienceItem, EducationItem, CertificationItem,
+  DEFAULT_PROFILE, DEFAULT_HERO, DEFAULT_ABOUT, DEFAULT_SOCIALS, DEFAULT_CONTACT, DEFAULT_PROJECT_CATEGORIES,
+  subscribeProfile, subscribeHero, subscribeAbout, subscribeSocials, subscribeContact, subscribeProjectCategories, subscribeProjects, subscribeSkills, subscribeServices, subscribeExperience,
   subscribeEducation, subscribeCertificates
 } from '@/lib/firestoreCMS';
+
+export function useLiveProjectCategories() {
+  const [categories, setCategories] = useState<ProjectCategoryRecord[]>(DEFAULT_PROJECT_CATEGORIES);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsub = subscribeProjectCategories((list) => {
+      setCategories(list);
+      setLoading(false);
+    });
+    return () => unsub();
+  }, []);
+
+  return { categories, loading };
+}
 import { SiteSettings, DEFAULT_SITE_SETTINGS, subscribeSiteSettings } from '@/lib/siteSettings';
 
 export function useLiveProfile() {

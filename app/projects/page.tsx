@@ -20,13 +20,14 @@ import Link from 'next/link';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/sections/Footer';
 import SectionHeading from '@/components/ui/SectionHeading';
-import { projectCategories, projects as defaultProjects } from '@/data';
-import { useLiveProjects } from '@/hooks/useFirestoreCMS';
+import { projectCategories as defaultCategories, projects as defaultProjects } from '@/data';
+import { useLiveProjects, useLiveProjectCategories } from '@/hooks/useFirestoreCMS';
 
 const categoryIcons: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
   GraduationCap,
   Layout,
   Bot,
+  Layers,
 };
 
 export default function ProjectsPage() {
@@ -36,7 +37,10 @@ export default function ProjectsPage() {
   const [selectedCaseStudy, setSelectedCaseStudy] = useState<any | null>(null);
 
   const { projects: liveProjects } = useLiveProjects();
+  const { categories: liveCategories } = useLiveProjectCategories();
+
   const allProjects = liveProjects.length > 0 ? liveProjects : defaultProjects;
+  const projectCategories = liveCategories.length > 0 ? liveCategories : defaultCategories;
 
   const getCategorySlug = (p: { category?: string; categorySlug?: string }) => {
     if (p.categorySlug) return p.categorySlug;
@@ -75,7 +79,7 @@ export default function ProjectsPage() {
         {/* Categories Quick Select Bar */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10 max-w-4xl mx-auto">
           {projectCategories.map((cat) => {
-            const IconComp = categoryIcons[cat.icon] || Layers;
+            const IconComp = (cat.icon && categoryIcons[cat.icon]) ? categoryIcons[cat.icon] : Layers;
             const count = allProjects.filter((p) => getCategorySlug(p) === cat.id).length;
             const isSelected = selectedCategorySlug === cat.id;
 

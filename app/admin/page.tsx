@@ -5,19 +5,20 @@ import {
   Activity, CheckCircle2, XCircle, Trash2, LogOut, ArrowLeft, RefreshCw, BarChart2,
   MessageSquare, Star, Calendar, Folder, BookOpen, Settings, Save, Plus,
   Award as AwardIcon, Briefcase, GraduationCap, Code2, Cpu, User, Phone,
-  Share2, Image as ImageIcon, Copy, ShieldCheck, Search, Eye, Mail
+  Share2, Image as ImageIcon, Copy, ShieldCheck, Search, Eye, Mail, Layers
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AnalyticsStats, Review, ContactMessage, Booking } from '@/types';
 import {
-  useLiveProfile, useLiveHero, useLiveAbout, useLiveSocials, useLiveContact, useLiveProjects,
+  useLiveProfile, useLiveHero, useLiveAbout, useLiveSocials, useLiveContact, useLiveProjectCategories, useLiveProjects,
   useLiveSkills, useLiveServices, useLiveExperience, useLiveEducation, useLiveCertificates,
   useLiveCertificationsCollection, useLiveBlogs, useLiveMedia, useLiveBookings
 } from '@/hooks/useFirestoreCMS';
 import {
   updateProfileDocument, updateHeroDocument, updateAboutDocument, updateSocialsDocument,
   updateContactDocument, addProjectDocument, updateProjectDocument, deleteProjectDocument,
+  addProjectCategoryDocument, updateProjectCategoryDocument, deleteProjectCategoryDocument,
   addExperienceDocument, updateExperienceDocument, deleteExperienceDocument,
   addEducationDocument, updateEducationDocument, deleteEducationDocument,
   addAwardDocument, updateAwardDocument, deleteAwardDocument,
@@ -64,6 +65,7 @@ export default function AdminDashboard() {
   const { about } = useLiveAbout();
   const { socials } = useLiveSocials();
   const { contact } = useLiveContact();
+  const { categories: projectCategories } = useLiveProjectCategories();
   const { projects } = useLiveProjects();
   const { skills } = useLiveSkills();
   const { services } = useLiveServices();
@@ -374,19 +376,45 @@ export default function AdminDashboard() {
     notifySuccess('Service removed!');
   };
 
-  const handleAddProject = async () => {
-    await addProjectDocument({
-      title: '',
-      description: '',
-      image: '',
-      technologies: [],
-      liveUrl: '',
-      githubUrl: '',
-      category: 'Web',
-      featured: false,
-      published: false,
+  const handleAddProjectCategory = async () => {
+    const title = 'New Category';
+    const id = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    await addProjectCategoryDocument({
+      id: `${id}-${Date.now().toString().slice(-4)}`,
+      title,
+      subtitle: 'Category Subtitle',
+      description: 'Short category description...',
+      icon: 'Layers',
     });
-    notifySuccess('New Project added! Fill in all fields.');
+    notifySuccess('New Project Category created!');
+  };
+
+  const handleDeleteProjectCategory = async (catId: string) => {
+    const activeCount = projects.filter((p) => (p.categorySlug || p.category.toLowerCase().replace(/[^a-z0-9]+/g, '-')) === catId).length;
+    if (activeCount > 0) {
+      setErrorMsg(`Cannot delete category "${catId}": It contains ${activeCount} active project(s). Move or delete those projects first.`);
+      return;
+    }
+    await deleteProjectCategoryDocument(catId);
+    notifySuccess(`Project Category "${catId}" removed from Firestore!`);
+  };
+
+  const handleAddProject = async () => {
+    const defaultCat = projectCategories[0] || { id: 'college-education', title: 'College / Education Projects' };
+    await addProjectDocument({
+      title: 'New Software Project',
+      description: 'Short project overview and description...',
+      details: 'Full technical details and architecture...',
+      image: '',
+      technologies: ['Next.js', 'TypeScript', 'Tailwind CSS'],
+      liveUrl: 'https://www.abishektech.online',
+      githubUrl: 'https://github.com/snvadivelabi11-boop',
+      category: defaultCat.title,
+      categorySlug: defaultCat.id,
+      featured: true,
+      published: true,
+    });
+    notifySuccess('New Project added! Select category and fill in project details.');
   };
 
   const handleDuplicateProject = async (p: ProjectItem) => {
@@ -1787,84 +1815,298 @@ export default function AdminDashboard() {
             </div>
           )}
 
-          {/* 9. PROJECTS CMS */}
+          {/* 9. PROJECTS & CATEGORY MANAGEMENT CMS */}
           {activeTab === 'projects' && (
-            <div className="space-y-6 text-xs">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h2 className="text-base font-bold text-white flex items-center gap-2">
-                    <Folder size={18} className="text-violet-400" /> Projects CMS ({projects.length})
-                  </h2>
-                  <p className="text-xs text-white/50">Full CRUD management for software project cards.</p>
+            <div className="space-y-10 text-xs">
+              {/* SECTION A: CATEGORY MANAGEMENT */}
+              <div className="p-6 rounded-3xl border border-violet-500/20 bg-violet-950/10 space-y-6">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/[0.08] pb-4">
+                  <div>
+                    <h2 className="text-base font-bold text-white flex items-center gap-2">
+                      <Layers size={18} className="text-violet-400" /> Project Category Manager ({projectCategories.length})
+                    </h2>
+                    <p className="text-xs text-white/50">Manage custom project categories, titles, descriptions, and icon badges.</p>
+                  </div>
+                  <button
+                    onClick={handleAddProjectCategory}
+                    className="px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold flex items-center gap-2 transition-all shadow-md"
+                  >
+                    <Plus size={15} /> Add Category
+                  </button>
                 </div>
-                <button onClick={handleAddProject} className="px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold flex items-center gap-2">
-                  <Plus size={15} /> Add Project
-                </button>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {projectCategories.map((cat) => {
+                    const activeCount = projects.filter(
+                      (p) => (p.categorySlug || p.category.toLowerCase().replace(/[^a-z0-9]+/g, '-')) === cat.id
+                    ).length;
+
+                    return (
+                      <div key={cat.id} className="p-5 rounded-2xl border border-white/[0.08] bg-white/[0.02] space-y-3">
+                        <div className="flex justify-between items-start">
+                          <span className="px-2.5 py-0.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 font-mono text-[10px] font-bold">
+                            {cat.id}
+                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] text-white/50 font-mono bg-white/[0.04] px-2 py-0.5 rounded-full">
+                              {activeCount} {activeCount === 1 ? 'Project' : 'Projects'}
+                            </span>
+                            <button
+                              onClick={() => handleDeleteProjectCategory(cat.id)}
+                              className="p-1 text-white/40 hover:text-red-400 transition-colors"
+                              title="Delete Category"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-[10px] text-white/40 mb-0.5">Category Title *</label>
+                          <input
+                            type="text"
+                            defaultValue={cat.title}
+                            onBlur={(e) => updateProjectCategoryDocument(cat.id, { title: e.target.value })}
+                            className="w-full p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] font-bold text-white text-xs focus:outline-none focus:border-violet-500/50"
+                            placeholder="e.g. College / Education Projects"
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="block text-[10px] text-white/40 mb-0.5">Subtitle</label>
+                            <input
+                              type="text"
+                              defaultValue={cat.subtitle || ''}
+                              onBlur={(e) => updateProjectCategoryDocument(cat.id, { subtitle: e.target.value })}
+                              className="w-full p-2 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white/80 text-xs"
+                              placeholder="Subtitle"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] text-white/40 mb-0.5">Lucide Icon</label>
+                            <select
+                              defaultValue={cat.icon || 'Layers'}
+                              onChange={(e) => updateProjectCategoryDocument(cat.id, { icon: e.target.value })}
+                              className="w-full p-2 rounded-xl bg-neutral-900 border border-white/[0.08] text-violet-300 font-mono text-xs"
+                            >
+                              <option value="GraduationCap">GraduationCap (Education)</option>
+                              <option value="Layout">Layout (App / Web)</option>
+                              <option value="Bot">Bot (AI / Agent)</option>
+                              <option value="Code2">Code2 (Software)</option>
+                              <option value="Cpu">Cpu (Hardware / System)</option>
+                              <option value="Database">Database (Data / SQL)</option>
+                              <option value="Globe">Globe (Network / Web)</option>
+                              <option value="Sparkles">Sparkles (Innovation)</option>
+                              <option value="Layers">Layers (General)</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-[10px] text-white/40 mb-0.5">Description</label>
+                          <textarea
+                            rows={2}
+                            defaultValue={cat.description || ''}
+                            onBlur={(e) => updateProjectCategoryDocument(cat.id, { description: e.target.value })}
+                            className="w-full p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white/60 text-xs focus:outline-none"
+                            placeholder="Description for this category..."
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-4">
-                {projects.map((p) => (
-                  <div key={p.id} className="p-5 rounded-2xl border border-white/[0.08] bg-white/[0.02] space-y-3">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <input
-                          type="text"
-                          defaultValue={p.title}
-                          onBlur={(e) => updateProjectDocument(p.id!, { title: e.target.value })}
-                          className="font-bold text-white text-sm bg-transparent border-b border-transparent hover:border-violet-500 focus:outline-none"
-                        />
-                        <span className="text-[10px] font-mono text-violet-300 block mt-0.5">Category: {p.category}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button onClick={() => handleDuplicateProject(p)} className="p-1 text-white/40 hover:text-violet-400" title="Duplicate">
-                          <Copy size={14} />
-                        </button>
-                        <button onClick={() => handleDeleteProject(p.id!)} className="p-1 text-white/40 hover:text-red-400" title="Delete">
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    </div>
-                    <textarea
-                      rows={2}
-                      defaultValue={p.description}
-                      onBlur={(e) => updateProjectDocument(p.id!, { description: e.target.value })}
-                      className="w-full p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white/60 focus:outline-none"
-                    />
-                    <div>
-                      <label className="block text-[10px] text-white/40 mb-0.5">Project Image (Cloudinary CDN / URL)</label>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          defaultValue={p.image || ''}
-                          onBlur={(e) => updateProjectDocument(p.id!, { image: e.target.value })}
-                          className="w-full p-2 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-xs font-mono"
-                          placeholder="https://..."
-                        />
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={async (e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                              try {
-                                setIsUploadingMedia(true);
-                                const asset = await uploadMediaAsset(file, 'projects');
-                                await updateProjectDocument(p.id!, { image: asset.url });
-                                notifySuccess('Project image uploaded to Cloudinary CDN!');
-                              } catch (err: unknown) {
-                                const msg = err instanceof Error ? err.message : String(err);
-                                setErrorMsg(`Project image upload failed: ${msg}`);
-                              } finally {
-                                setIsUploadingMedia(false);
-                              }
-                            }
-                          }}
-                          className="p-1 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-xs"
-                        />
-                      </div>
-                    </div>
+              {/* SECTION B: PROJECTS MANAGEMENT */}
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h2 className="text-base font-bold text-white flex items-center gap-2">
+                      <Folder size={18} className="text-violet-400" /> Projects Management ({projects.length})
+                    </h2>
+                    <p className="text-xs text-white/50">Add, edit, assign category, and permanently delete projects in Firestore.</p>
                   </div>
-                ))}
+                  <button
+                    onClick={handleAddProject}
+                    className="px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold flex items-center gap-2 transition-all shadow-md"
+                  >
+                    <Plus size={15} /> Add Project
+                  </button>
+                </div>
+
+                {projects.length === 0 ? (
+                  <div className="text-center py-16 border border-dashed border-white/10 rounded-3xl space-y-2">
+                    <Folder size={32} className="mx-auto text-white/30" />
+                    <p className="text-white/60 font-semibold text-sm">No Projects in Firestore</p>
+                    <p className="text-white/40 text-xs">Click &ldquo;+ Add Project&rdquo; to insert a new software project.</p>
+                  </div>
+                ) : (
+                  <div className="grid md:grid-cols-2 gap-6">
+                    {projects.map((p) => (
+                      <div key={p.id} className="p-6 rounded-3xl border border-white/[0.08] bg-white/[0.02] space-y-4">
+                        {/* Header & Actions */}
+                        <div className="flex justify-between items-start gap-2">
+                          <div className="flex-1 space-y-1">
+                            <label className="block text-[10px] text-white/40">Project Title *</label>
+                            <input
+                              type="text"
+                              defaultValue={p.title}
+                              onBlur={(e) => updateProjectDocument(p.id!, { title: e.target.value })}
+                              className="w-full p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] font-bold text-white text-sm focus:outline-none focus:border-violet-500/50"
+                              placeholder="Project Title"
+                            />
+                          </div>
+
+                          <div className="flex items-center gap-1.5 pt-4">
+                            <button
+                              onClick={() => handleDuplicateProject(p)}
+                              className="p-2 rounded-xl bg-white/5 hover:bg-violet-500/20 text-white/60 hover:text-violet-300 transition-all"
+                              title="Duplicate Project"
+                            >
+                              <Copy size={15} />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteProject(p.id!)}
+                              className="p-2 rounded-xl bg-white/5 hover:bg-red-500/20 text-white/60 hover:text-red-400 transition-all"
+                              title="Delete Project Permanently"
+                            >
+                              <Trash2 size={15} />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Category Required Dropdown */}
+                        <div>
+                          <label className="block text-[10px] text-violet-300 font-semibold mb-1">Assigned Category (Required) *</label>
+                          <select
+                            value={p.categorySlug || projectCategories.find((c) => c.title === p.category)?.id || projectCategories[0]?.id || ''}
+                            onChange={(e) => {
+                              const selectedSlug = e.target.value;
+                              const matchedCat = projectCategories.find((c) => c.id === selectedSlug);
+                              const catTitle = matchedCat ? matchedCat.title : selectedSlug;
+                              updateProjectDocument(p.id!, {
+                                categorySlug: selectedSlug,
+                                category: catTitle,
+                              });
+                              notifySuccess(`Project category updated to "${catTitle}"!`);
+                            }}
+                            className="w-full p-2.5 rounded-xl bg-neutral-900 border border-violet-500/40 text-violet-300 font-semibold text-xs focus:outline-none focus:border-violet-400"
+                          >
+                            {projectCategories.map((cat) => (
+                              <option key={cat.id} value={cat.id}>
+                                {cat.title} ({cat.id})
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        {/* Description */}
+                        <div>
+                          <label className="block text-[10px] text-white/40 mb-0.5">Short Overview / Description</label>
+                          <textarea
+                            rows={2}
+                            defaultValue={p.description}
+                            onBlur={(e) => updateProjectDocument(p.id!, { description: e.target.value })}
+                            className="w-full p-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white/70 text-xs focus:outline-none"
+                            placeholder="Brief project description..."
+                          />
+                        </div>
+
+                        {/* Technologies Comma-separated */}
+                        <div>
+                          <label className="block text-[10px] text-white/40 mb-0.5">Technologies (comma-separated)</label>
+                          <input
+                            type="text"
+                            defaultValue={p.technologies ? p.technologies.join(', ') : ''}
+                            onBlur={(e) => {
+                              const techArr = e.target.value
+                                .split(',')
+                                .map((t) => t.trim())
+                                .filter(Boolean);
+                              updateProjectDocument(p.id!, { technologies: techArr });
+                            }}
+                            className="w-full p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-xs"
+                            placeholder="Next.js 15, TypeScript, Tailwind CSS, Python"
+                          />
+                        </div>
+
+                        {/* Live Demo & GitHub URLs */}
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[10px] text-white/40 mb-0.5">Live Demo URL</label>
+                            <input
+                              type="text"
+                              defaultValue={p.liveUrl || ''}
+                              onBlur={(e) => updateProjectDocument(p.id!, { liveUrl: e.target.value })}
+                              className="w-full p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-xs font-mono"
+                              placeholder="https://..."
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] text-white/40 mb-0.5">GitHub Repository URL</label>
+                            <input
+                              type="text"
+                              defaultValue={p.githubUrl || ''}
+                              onBlur={(e) => updateProjectDocument(p.id!, { githubUrl: e.target.value })}
+                              className="w-full p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-xs font-mono"
+                              placeholder="https://github.com/..."
+                            />
+                          </div>
+                        </div>
+
+                        {/* Image Upload */}
+                        <div>
+                          <label className="block text-[10px] text-white/40 mb-0.5">Project Image (Cloudinary CDN / URL)</label>
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="text"
+                              defaultValue={p.image || ''}
+                              onBlur={(e) => updateProjectDocument(p.id!, { image: e.target.value })}
+                              className="w-full p-2 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-xs font-mono"
+                              placeholder="https://res.cloudinary.com/..."
+                            />
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={async (e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  try {
+                                    setIsUploadingMedia(true);
+                                    const asset = await uploadMediaAsset(file, 'projects');
+                                    await updateProjectDocument(p.id!, { image: asset.url });
+                                    notifySuccess('Project image uploaded to Cloudinary CDN!');
+                                  } catch (err: unknown) {
+                                    const msg = err instanceof Error ? err.message : String(err);
+                                    setErrorMsg(`Project image upload failed: ${msg}`);
+                                  } finally {
+                                    setIsUploadingMedia(false);
+                                  }
+                                }
+                              }}
+                              className="p-1 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-xs"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Featured Checkbox */}
+                        <div className="flex items-center gap-3 pt-1">
+                          <label className="flex items-center gap-2 cursor-pointer text-xs text-white/70">
+                            <input
+                              type="checkbox"
+                              defaultChecked={p.featured !== false}
+                              onChange={(e) => updateProjectDocument(p.id!, { featured: e.target.checked })}
+                              className="rounded bg-white/10 border-white/20 text-violet-500"
+                            />
+                            Featured Project on Homepage
+                          </label>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           )}

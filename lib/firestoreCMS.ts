@@ -78,19 +78,33 @@ export interface ServiceItem {
   features: string[];
 }
 
+export interface ProjectCategoryRecord {
+  id: string; // Slug ID e.g. "college-education", "app-platform", "ai-automation"
+  title: string; // Display Name e.g. "College / Education Projects"
+  subtitle?: string;
+  description?: string;
+  icon?: string; // Lucide icon e.g. "GraduationCap", "Layout", "Bot"
+  order?: number;
+  createdAt?: string;
+}
+
 export interface ProjectItem {
   id?: string;
   title: string;
   description: string;
+  details?: string;
   image: string;
   technologies: string[];
   liveUrl: string;
   githubUrl: string;
   category: string;
+  categorySlug?: string;
   featured: boolean;
-  published: boolean;
+  published?: boolean;
   pinned?: boolean;
   archived?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
   caseStudy?: {
     problem: string;
     solution: string;
@@ -325,6 +339,33 @@ export const DEFAULT_SEO: SeoData = {
   ogImage: '/og-image.png',
 };
 
+export const DEFAULT_PROJECT_CATEGORIES: ProjectCategoryRecord[] = [
+  {
+    id: 'college-education',
+    title: 'College / Education Projects',
+    subtitle: 'EdTech, Academic Tools & Campus Portals',
+    description: 'Academic automation, campus management systems, and research tools engineered with Next.js, Python, and modern web stack.',
+    icon: 'GraduationCap',
+    order: 1,
+  },
+  {
+    id: 'app-platform',
+    title: 'App / Platform Projects',
+    subtitle: 'Web Apps, SaaS Platforms & Commerce',
+    description: 'Full-stack web applications, SaaS platforms, telemetry dashboards, and modern digital commerce storefronts.',
+    icon: 'Layout',
+    order: 2,
+  },
+  {
+    id: 'ai-automation',
+    title: 'AI / Automation Systems',
+    subtitle: 'Autonomous AI Agents & RAG Pipelines',
+    description: 'Intelligent multi-step LLM workflows, autonomous agent orchestration, and vector embedding RAG document summarizers.',
+    icon: 'Bot',
+    order: 3,
+  },
+];
+
 // 3. Realtime Listeners
 export function subscribeProfile(callback: (data: ProfileData) => void): () => void {
   if (typeof window === 'undefined' || !db) {
@@ -379,6 +420,67 @@ export function subscribeContact(callback: (data: ContactData) => void): () => v
   return onSnapshot(docRef, (snap) => {
     callback(snap.exists() ? ({ ...DEFAULT_CONTACT, ...snap.data() } as ContactData) : DEFAULT_CONTACT);
   }, () => callback(DEFAULT_CONTACT));
+}
+
+export function subscribeProjectCategories(callback: (categories: ProjectCategoryRecord[]) => void): () => void {
+  if (typeof window === 'undefined' || !db) {
+    callback(DEFAULT_PROJECT_CATEGORIES);
+    return () => {};
+  }
+  const colRef = collection(db, 'projectCategories');
+  return onSnapshot(colRef, (snap) => {
+    if (snap.empty) {
+      callback(DEFAULT_PROJECT_CATEGORIES);
+      return;
+    }
+    const list: ProjectCategoryRecord[] = [];
+    snap.forEach((d) => {
+      const data = d.data();
+      list.push({
+        id: d.id,
+        title: data.title || d.id,
+        subtitle: data.subtitle || '',
+        description: data.description || '',
+        icon: data.icon || 'Layers',
+        order: data.order ?? 99,
+        createdAt: data.createdAt,
+      } as ProjectCategoryRecord);
+    });
+    list.sort((a, b) => (a.order ?? 99) - (b.order ?? 99));
+    callback(list);
+  }, () => callback(DEFAULT_PROJECT_CATEGORIES));
+}
+
+export async function addProjectCategoryDocument(category: Omit<ProjectCategoryRecord, 'id'> & { id?: string }): Promise<string> {
+  if (db) {
+    const rawId = category.id || category.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const cleanId = rawId || 'cat-' + Date.now();
+    const docRef = doc(db, 'projectCategories', cleanId);
+    await setDoc(docRef, {
+      ...category,
+      id: cleanId,
+      createdAt: category.createdAt || new Date().toISOString(),
+    }, { merge: true });
+    return cleanId;
+  }
+  return category.id || 'cat-' + Date.now();
+}
+
+export async function updateProjectCategoryDocument(id: string, category: Partial<ProjectCategoryRecord>): Promise<void> {
+  if (db) {
+    const cleanItem = Object.fromEntries(
+      Object.entries(category).filter(([, val]) => val !== undefined)
+    );
+    if (Object.keys(cleanItem).length > 0) {
+      await updateDoc(doc(db, 'projectCategories', id), cleanItem);
+    }
+  }
+}
+
+export async function deleteProjectCategoryDocument(id: string): Promise<void> {
+  if (db) {
+    await deleteDoc(doc(db, 'projectCategories', id));
+  }
 }
 
 export function subscribeProjects(callback: (projects: ProjectItem[]) => void): () => void {

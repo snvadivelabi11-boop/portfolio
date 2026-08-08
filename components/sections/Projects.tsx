@@ -6,6 +6,11 @@ import {
   GraduationCap,
   Layout,
   Bot,
+  Code2,
+  Cpu,
+  Database,
+  Globe,
+  Sparkles,
   ArrowRight,
   ArrowLeft,
   ExternalLink,
@@ -20,19 +25,25 @@ import Link from 'next/link';
 import SectionHeading from '@/components/ui/SectionHeading';
 import AnimatedButton from '@/components/ui/AnimatedButton';
 import { fadeInUp, staggerContainer } from '@/utils/animations';
-import { useLiveProjects } from '@/hooks/useFirestoreCMS';
-import { projectCategories } from '@/data';
-import { ProjectCategory } from '@/types';
+import { useLiveProjects, useLiveProjectCategories } from '@/hooks/useFirestoreCMS';
+import { ProjectCategoryRecord } from '@/lib/firestoreCMS';
 
 const categoryIcons: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
   GraduationCap,
   Layout,
   Bot,
+  Code2,
+  Cpu,
+  Database,
+  Globe,
+  Sparkles,
+  Layers,
 };
 
 export default function Projects() {
   const { projects: liveProjects } = useLiveProjects();
-  const [selectedCategory, setSelectedCategory] = useState<ProjectCategory | null>(null);
+  const { categories: liveCategories } = useLiveProjectCategories();
+  const [selectedCategory, setSelectedCategory] = useState<ProjectCategoryRecord | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedCaseStudy, setSelectedCaseStudy] = useState<any | null>(null);
 
@@ -69,8 +80,8 @@ export default function Projects() {
               className="space-y-12"
             >
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {projectCategories.map((cat) => {
-                  const IconComponent = categoryIcons[cat.icon] || Layers;
+                {liveCategories.map((cat) => {
+                  const IconComponent = (cat.icon && categoryIcons[cat.icon]) ? categoryIcons[cat.icon] : Layers;
                   const count = liveProjects.filter((p) => getCategorySlug(p) === cat.id).length;
 
                   return (
