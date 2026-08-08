@@ -151,7 +151,7 @@ export function generateProjectSchema(
       '@id': `${siteConfig.url}/#person`,
     },
     keywords: technologies.join(', '),
-    dateCreated: new Date().toISOString().split('T')[0],
+    dateCreated: '2024-01-01T00:00:00+05:30',
   };
 }
 
@@ -181,8 +181,8 @@ export function generateProfilePageSchema() {
     mainEntity: {
       '@id': `${siteConfig.url}/#person`,
     },
-    dateCreated: '2024-01-01',
-    dateModified: new Date().toISOString().split('T')[0],
+    dateCreated: '2024-01-01T00:00:00+05:30',
+    dateModified: '2026-08-07T00:00:00+05:30',
     inLanguage: siteConfig.language,
   };
 }

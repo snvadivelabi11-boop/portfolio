@@ -52,7 +52,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     '@type': 'Article',
     headline: post.title,
     description: post.excerpt,
-    datePublished: post.publishedAt,
+    datePublished: post.publishedAt.includes('T') ? post.publishedAt : `${post.publishedAt}T00:00:00+05:30`,
+    dateModified: post.publishedAt.includes('T') ? post.publishedAt : `${post.publishedAt}T00:00:00+05:30`,
     author: {
       '@type': 'Person',
       name: siteConfig.author.name,
