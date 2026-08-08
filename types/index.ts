@@ -22,6 +22,14 @@ export interface SkillCategory {
   skills: Skill[];
 }
 
+export interface ProjectCategory {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  icon: string;
+}
+
 export interface Project {
   id: number;
   title: string;
@@ -31,6 +39,7 @@ export interface Project {
   liveUrl: string;
   githubUrl: string;
   category: string;
+  categorySlug?: string;
   caseStudy?: {
     problem: string;
     solution: string;
