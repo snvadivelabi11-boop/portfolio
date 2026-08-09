@@ -152,7 +152,7 @@ export async function getLiveSystemPrompt(): Promise<string> {
   const activeName = profile.fullName || hero.name || 'Abishek';
   const activeTitle = profile.jobTitle || hero.title || 'Full Stack Developer & AI Creator';
   const activeLocation = profile.location || contact.location || 'Tiruvannamalai, Tamil Nadu, India';
-  const activeEmail = profile.email || contact.email || 'SNVADIVEL11@gmail.com';
+  const activeEmail = profile.email || contact.email || 'snvadivelabi11@gmail.com';
   const activePhone = profile.phone || contact.phone || '9786801597';
   const activeGithub = contact.github || socials.github || 'https://github.com/snvadivelabi11-boop';
   const activeLinkedin = contact.linkedin || socials.linkedin || 'https://www.linkedin.com/in/abishek-v-a984a6382';
@@ -252,7 +252,7 @@ AUTHENTIC PORTFOLIO DATA FOR ABISHEK:
 - Name: Abishek
 - Title: Full Stack Developer & AI Creator
 - Location: Tiruvannamalai, Tamil Nadu, India
-- Email: SNVADIVEL11@gmail.com
+- Email: snvadivelabi11@gmail.com
 - Phone: +91 9786801597
 - GitHub: https://github.com/snvadivelabi11-boop
 - LinkedIn: https://www.linkedin.com/in/abishek-v-a984a6382

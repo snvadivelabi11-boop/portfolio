@@ -44,7 +44,7 @@ async function runAll() {
   await asyncTest('Verify default Hero seed structure', () => {
     assert.equal(DEFAULT_HERO.name, 'Abishek');
     assert.ok(DEFAULT_HERO.titles.length > 0);
-    assert.equal(DEFAULT_HERO.email, 'SNVADIVEL11@gmail.com');
+    assert.equal(DEFAULT_HERO.email, 'snvadivelabi11@gmail.com');
   });
 
   await asyncTest('Verify default About & Socials seed values', () => {

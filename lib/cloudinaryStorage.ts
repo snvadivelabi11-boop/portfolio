@@ -154,7 +154,7 @@ export function uploadToCloudinary(
 export async function uploadMediaAsset(
   file: File,
   category: MediaItem['category'],
-  adminEmail: string = 'SNVADIVEL11@gmail.com',
+  adminEmail: string = 'snvadivelabi11@gmail.com',
   onProgress?: (progress: number) => void
 ): Promise<MediaItem> {
   console.log(`[Cloudinary Media Manager] Uploading ${file.name} under category: ${category}...`);

@@ -20,7 +20,7 @@ export default function Hero() {
   const [isDeleting, setIsDeleting] = useState(false);
   const orbRef = useRef<HTMLDivElement>(null);
 
-  const activeEmail = settings?.personal?.email || hero.email || 'SNVADIVEL11@gmail.com';
+  const activeEmail = settings?.personal?.email || hero.email || 'snvadivelabi11@gmail.com';
   const activeGithub = settings?.socials?.github || socials.github;
   const activeLinkedin = settings?.socials?.linkedin || socials.linkedin;
   const activeInstagram = settings?.socials?.instagram || socials.instagram;

@@ -17,7 +17,7 @@ export default function Footer() {
   const { settings } = useLiveSettings();
   const { contact } = useLiveContact();
   const activeName = settings?.personal?.name || 'Abishek';
-  const activeEmail = settings?.personal?.email || contact.email || 'SNVADIVEL11@gmail.com';
+  const activeEmail = settings?.personal?.email || contact.email || 'snvadivelabi11@gmail.com';
   const activePhone = settings?.personal?.phone || contact.phone || '9786801597';
   const activeLocation = settings?.personal?.location || contact.location || 'Tiruvannamalai, Tamil Nadu, India';
 

@@ -53,7 +53,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
     aboutDescription: 'Dedicated Full Stack Developer & AI Creator building production software.',
     location: 'Tiruvannamalai, Tamil Nadu, India',
     phone: '9786801597',
-    email: 'SNVADIVEL11@gmail.com',
+    email: 'snvadivelabi11@gmail.com',
     profileImage: '/avatar.jpg',
     resumeUrl: '#resume',
   },
@@ -99,7 +99,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
 // 2. Update Site Settings with Version Backup Snapshot
 export async function updateSiteSettings(
   newSettings: Partial<SiteSettings>,
-  adminEmail: string = 'SNVADIVEL11@gmail.com'
+  adminEmail: string = 'snvadivelabi11@gmail.com'
 ): Promise<SiteSettings> {
   const current = await getSiteSettings();
   const updated: SiteSettings = {

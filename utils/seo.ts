@@ -18,7 +18,7 @@ export const siteConfig = {
   language: 'en',
   author: {
     name: 'Abishek',
-    email: 'SNVADIVEL11@gmail.com',
+    email: 'snvadivelabi11@gmail.com',
     phone: '9786801597',
     url: process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'https://www.abishektech.online',
     jobTitle: 'Full Stack Developer & AI Creator',

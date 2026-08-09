@@ -512,7 +512,7 @@ export default function AdminDashboard() {
       const asset = await uploadMediaAsset(
         uploadFile,
         uploadCategory,
-        process.env.ADMIN_EMAIL || 'SNVADIVEL11@gmail.com'
+        process.env.ADMIN_EMAIL || 'snvadivelabi11@gmail.com'
       );
       notifySuccess(`Successfully uploaded ${asset.name} to Cloudinary CDN!`);
       setUploadFile(null);
@@ -540,7 +540,7 @@ export default function AdminDashboard() {
       const asset = await uploadMediaAsset(
         file,
         'profile',
-        process.env.ADMIN_EMAIL || 'SNVADIVEL11@gmail.com'
+        process.env.ADMIN_EMAIL || 'snvadivelabi11@gmail.com'
       );
       setProfileForm((prev) => ({
         ...prev,
@@ -562,7 +562,7 @@ export default function AdminDashboard() {
       const asset = await uploadMediaAsset(
         file,
         'resume',
-        process.env.ADMIN_EMAIL || 'SNVADIVEL11@gmail.com'
+        process.env.ADMIN_EMAIL || 'snvadivelabi11@gmail.com'
       );
       setProfileForm((prev) => ({ ...prev, resumeUrl: asset.url }));
       notifySuccess('Resume PDF uploaded to Cloudinary CDN & synced!');

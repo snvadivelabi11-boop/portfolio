@@ -24,7 +24,7 @@ export default function Contact() {
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const activeEmail = settings?.personal?.email || contact.email || 'SNVADIVEL11@gmail.com';
+  const activeEmail = settings?.personal?.email || contact.email || 'snvadivelabi11@gmail.com';
   const activePhone = settings?.personal?.phone || contact.phone || '9786801597';
   const activeLocation = settings?.personal?.location || contact.location || 'Tiruvannamalai, Tamil Nadu, India';
   const activeWhatsapp = settings?.socials?.whatsapp || contact.whatsapp || socials.whatsapp || 'https://wa.me/919786801597';

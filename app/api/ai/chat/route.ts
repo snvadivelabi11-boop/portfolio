@@ -69,7 +69,7 @@ export async function POST(request: Request) {
     ) {
       await saveContactMessage({
         name: 'AI Chat Lead',
-        email: process.env.ADMIN_EMAIL || 'SNVADIVEL11@gmail.com',
+        email: process.env.ADMIN_EMAIL || 'snvadivelabi11@gmail.com',
         subject: 'New Inquiry via OpenRouter AI Assistant',
         message: `Captured Chat Inquiry:\n${sanitizedPrompt}`,
       }).catch(() => {});

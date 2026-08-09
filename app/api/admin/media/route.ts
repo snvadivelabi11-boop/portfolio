@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     const formData = await request.formData();
     const file = formData.get('file') as File | null;
     const category = (formData.get('category') as MediaItem['category']) || 'projects';
-    const adminEmail = (formData.get('adminEmail') as string) || 'SNVADIVEL11@gmail.com';
+    const adminEmail = (formData.get('adminEmail') as string) || 'snvadivelabi11@gmail.com';
 
     if (!file) {
       return NextResponse.json({ success: false, error: 'No file payload provided' }, { status: 400 });

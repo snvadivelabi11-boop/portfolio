@@ -28,7 +28,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const updated = await updateSiteSettings(settings, adminEmail || 'SNVADIVEL11@gmail.com');
+    const updated = await updateSiteSettings(settings, adminEmail || 'snvadivelabi11@gmail.com');
 
     return NextResponse.json({
       success: true,

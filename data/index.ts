@@ -144,7 +144,7 @@ export const personalStats = {
   clientsCount: '',
   awardsCount: '',
   location: 'Tiruvannamalai, Tamil Nadu, India',
-  email: 'SNVADIVEL11@gmail.com',
+  email: 'snvadivelabi11@gmail.com',
   phone: '9786801597',
 };
 

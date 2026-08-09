@@ -21,7 +21,7 @@ export interface BackupSnapshot {
 export async function createSystemBackup(
   name: string = `System_Backup_${new Date().toISOString().split('T')[0]}`,
   type: 'Automatic' | 'Manual' = 'Manual',
-  adminEmail: string = 'SNVADIVEL11@gmail.com'
+  adminEmail: string = 'snvadivelabi11@gmail.com'
 ): Promise<BackupSnapshot> {
   const settings = await getSiteSettings();
   const projects = await getProjects();

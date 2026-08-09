@@ -248,7 +248,7 @@ export const DEFAULT_PROFILE: ProfileData = {
   jobTitle: 'Full Stack Developer & AI Creator',
   headline: 'Building enterprise-grade web applications & autonomous AI workflows',
   location: 'Tiruvannamalai, Tamil Nadu, India',
-  email: 'SNVADIVEL11@gmail.com',
+  email: 'snvadivelabi11@gmail.com',
   phone: '9786801597',
   resumeUrl: '#',
   status: 'Open for Select Work & AI Collaborations',
@@ -268,7 +268,7 @@ export const DEFAULT_HERO: HeroData = {
   ],
   description: 'Building high-performance web applications, serverless AI automation workflows, and elegant digital products.',
   location: 'Tiruvannamalai, Tamil Nadu, India',
-  email: 'SNVADIVEL11@gmail.com',
+  email: 'snvadivelabi11@gmail.com',
   phone: '9786801597',
   profilePhoto: '/avatar.jpg',
   ctaText: 'Explore Projects',
@@ -321,7 +321,7 @@ export const DEFAULT_SOCIALS: SocialLinksData = {
 };
 
 export const DEFAULT_CONTACT: ContactData = {
-  email: 'SNVADIVEL11@gmail.com',
+  email: 'snvadivelabi11@gmail.com',
   phone: '9786801597',
   location: 'Tiruvannamalai, Tamil Nadu, India',
   whatsapp: '+91 9786801597',
